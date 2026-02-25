@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/personnage')]
 final class PersonnageController extends AbstractController
 {
+    
     #[Route(name: 'app_personnage_index', methods: ['GET'])]
     public function index(PersonnageRepository $personnageRepository): Response
     {
