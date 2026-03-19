@@ -26,6 +26,10 @@ class Personnage
     #[ORM\Column(type: Types::TEXT)]
     private ?string $inventaire = null;
 
+    #[ORM\ManyToOne(inversedBy: 'personnages')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +79,18 @@ class Personnage
     public function setInventaire(string $inventaire): static
     {
         $this->inventaire = $inventaire;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

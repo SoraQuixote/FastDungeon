@@ -1,0 +1,48 @@
+/* symfony/public/css/style.css */
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel&display=swap');
+
+body {
+    font-family: 'Cinzel', serif;
+    background: radial-gradient(circle, #2b1d0f, #120c06);
+    color: #2b1d0f;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.page-parchemin {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 40px;
+    background: linear-gradient(#f7f1dc, #e8dfc2);
+    border: 6px solid #5a3a1b;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    min-height: 80vh;
+}
+
+h1, h2, h3, .medieval-font {
+    font-family: 'MedievalSharp', cursive;
+    color: #5a3a1b;
+}
+
+/* Style des boutons médiévaux */
+.btn-medieval, button, .btn-primary {
+    font-family: 'Cinzel', serif;
+    background: linear-gradient(#7a4a21, #4b2c12) !important;
+    color: #f7f1dc !important;
+    border: 2px solid #3a220e !important;
+    padding: 8px 15px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-medieval:hover {
+    background: linear-gradient(#9b5f2b, #5a3517) !important;
+}
+
+/* Inputs style parchemin */
+input, textarea, select {
+    background: #f7f1dc !important;
+    border: 2px solid #5a3a1b !important;
+    font-family: 'Cinzel', serif;
+}

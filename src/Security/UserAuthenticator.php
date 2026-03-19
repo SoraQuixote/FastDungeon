@@ -26,15 +26,18 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
     {
     }
 
-    public function authenticate(Request $request): Passport
+        public function authenticate(Request $request): Passport
     {
+        // On récupère le pseudo (souvent nommé _username ou pseudo dans le formulaire)
+        // Vérifie le nom de ton champ dans login.html.twig
+        $pseudo = $request->getPayload()->getString('pseudo'); 
         $password = $request->getPayload()->getString('password');
 
-        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $password);
+        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $pseudo);
 
         return new Passport(
-            new UserBadge($password),
-            new PasswordCredentials($request->getPayload()->getString('password')),
+            new UserBadge($pseudo), // C'est le pseudo qui identifie l'utilisateur
+            new PasswordCredentials($password),
             [
                 new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
                 new RememberMeBadge(),
@@ -48,9 +51,8 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // For example:
-        // return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        // On utilise le NOM de la route : app_personnage_index
+        return new RedirectResponse($this->urlGenerator->generate('app_personnage_index'));
     }
 
     protected function getLoginUrl(Request $request): string

@@ -19,7 +19,7 @@ final class PersonnageController extends AbstractController
     public function index(PersonnageRepository $personnageRepository): Response
     {
         return $this->render('personnage/index.html.twig', [
-            'personnages' => $personnageRepository->findAll(),
+        'personnages' => $personnageRepository->findBy(['user' => $this->getUser()]),
         ]);
     }
 
@@ -27,6 +27,7 @@ final class PersonnageController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $personnage = new Personnage();
+        $personnage->setUser($this->getUser());
         $form = $this->createForm(PersonnageType::class, $personnage);
         $form->handleRequest($request);
 
