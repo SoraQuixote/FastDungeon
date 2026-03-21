@@ -10,13 +10,27 @@ body {
 }
 
 .page-parchemin {
-    max-width: 1000px;
+max-width: 1000px;
     margin: 30px auto;
-    padding: 40px;
-    background: linear-gradient(#f7f1dc, #e8dfc2);
-    border: 6px solid #5a3a1b;
-    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    padding: 60px;
+    position: relative; 
     min-height: 80vh;
+    z-index: 1; 
+}
+
+.page-parchemin::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #e3d3a3; 
+    background-image: radial-gradient(circle, #2e2400 0%, #76644d 100%);
+    border: 10px #5a3a1b; 
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 0 0 50px rgba(0,0,0,0.2);
+    filter: url(#rough-edges);
+    z-index: -1;
 }
 
 h1, h2, h3, .medieval-font {
