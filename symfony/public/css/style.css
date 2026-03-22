@@ -1,36 +1,65 @@
 /* symfony/public/css/style.css */
 @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel&display=swap');
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Cinzel', serif;
-    background: radial-gradient(circle, #2b1d0f, #120c06);
+    background: #120c06; /* Fond très sombre pour faire ressortir le parchemin */
     color: #2b1d0f;
     min-height: 100vh;
     margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
+/* --- LA BARRE DE NAVIGATION (STYLE BOIS/CUIR) --- */
+.navbar-medieval {
+    background: linear-gradient(#4b2c12, #2b1d0f); /* Effet bois sombre */
+    border-bottom: 4px solid #5a3a1b;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    padding: 10px 20px;
+    z-index: 100;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between; /* Titre à gauche, bouton à droite */
+    align-items: center;
+    max-width: 1400px; /* On laisse de la place mais on garde une limite de lecture */
+    margin: 0 auto;
+    width: 100%;
+}
+
+.logo {
+    margin: 0;
+    font-family: 'MedievalSharp', cursive;
+    color: #f7f1dc;
+    font-size: 1.8rem;
+    text-shadow: 2px 2px 0px #000;
+}
+
+.aventurier-name {
+    color: #e8dfc2;
+    margin-right: 20px;
+    font-size: 0.9rem;
+}
+
+/* --- LE CONTENU PARCHEMIN PLEIN ÉCRAN --- */
 .page-parchemin {
-max-width: 1000px;
-    margin: 30px auto;
-    padding: 60px;
-    position: relative; 
-    min-height: 80vh;
-    z-index: 1; 
-}
-
-.page-parchemin::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #e3d3a3; 
-    background-image: radial-gradient(circle, #2e2400 0%, #76644d 100%);
-    border: 10px #5a3a1b; 
-    box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 0 0 50px rgba(0,0,0,0.2);
-    filter: url(#rough-edges);
-    z-index: -1;
+    flex: 1; /* Prend tout l'espace restant sous la nav */
+    width: 100%;
+    padding: 40px;
+    background: 
+        radial-gradient(rgba(247, 241, 220, 0.2), rgba(232, 223, 194, 0.1)), /* Texture légère */
+        url('https://www.transparenttextures.com/patterns/old-map.png'), /* Optionnel: texture papier */
+        linear-gradient(#f7f1dc, #e8dfc2);
+    border-left: 15px solid #5a3a1b; /* Simule les bords d'un rouleau */
+    border-right: 15px solid #5a3a1b;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.2);
+    overflow-y: auto;
 }
 
 h1, h2, h3, .medieval-font {
@@ -38,20 +67,23 @@ h1, h2, h3, .medieval-font {
     color: #5a3a1b;
 }
 
-/* Style des boutons médiévaux */
-.btn-medieval, button, .btn-primary {
+/* --- BOUTONS --- */
+.btn-medieval, button, .btn-primary, .btn-quitter {
     font-family: 'Cinzel', serif;
     background: linear-gradient(#7a4a21, #4b2c12) !important;
     color: #f7f1dc !important;
     border: 2px solid #3a220e !important;
-    padding: 8px 15px;
+    padding: 8px 20px;
     text-decoration: none;
     display: inline-block;
     cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
 }
 
-.btn-medieval:hover {
-    background: linear-gradient(#9b5f2b, #5a3517) !important;
+.btn-quitter:hover {
+    background: linear-gradient(#a32a2a, #631010) !important; /* Rouge sombre pour la déconnexion */
+    transform: scale(1.05);
 }
 
 /* Inputs style parchemin */
@@ -59,4 +91,5 @@ input, textarea, select {
     background: #f7f1dc !important;
     border: 2px solid #5a3a1b !important;
     font-family: 'Cinzel', serif;
+    padding: 5px;
 }
