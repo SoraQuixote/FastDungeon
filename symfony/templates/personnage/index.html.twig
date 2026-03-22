@@ -1,29 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Personnage index{% endblock %}
+{% block title %}Mes perssonages{% endblock %}
 
 {% block body %}
-    <h1>Personnage index</h1>
+    <h1> Mes Personnages </h1>
 
     <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>Prenom</th>
-                <th>CarnetDeVoyage</th>
-                <th>Inventaire</th>
-                <th>actions</th>
-            </tr>
-        </thead>
         <tbody>
         {% for personnage in personnages %}
             <tr>
-                <td>{{ personnage.id }}</td>
                 <td>{{ personnage.nom }}</td>
                 <td>{{ personnage.prenom }}</td>
-                <td>{{ personnage.carnetDeVoyage }}</td>
-                <td>{{ personnage.inventaire }}</td>
                 <td>
                     <a href="{{ path('app_personnage_show', {'id': personnage.id}) }}">show</a>
                     <a href="{{ path('app_personnage_edit', {'id': personnage.id}) }}">edit</a>
@@ -31,11 +18,11 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="6">no records found</td>
+                <td colspan="6">Vous n'avez aucun perssonages pour le moments</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_personnage_new') }}">Create new</a>
+    <a href="{{ path('app_personnage_new') }}">Nouveau perssonage</a>
 {% endblock %}
