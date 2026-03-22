@@ -4,29 +4,27 @@
         <meta charset="UTF-8">
         <title>{% block title %}FastDungeon{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2290%22>⚔️</text></svg>">
-        
-        {# Lien vers ton nouveau CSS #}
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        <div class="page-parchemin">
-            <header>
-                <h1 class="logo">Fast Dungeon</h1>
-                <nav>
-                    {% if app.user %}
-                        <span>Aventurier : {{ app.user.pseudo }}</span> | 
-                        <a href="{{ path('app_logout') }}">Quitter la taverne</a>
-                    {% endif %}
-                </nav>
-                <hr style="border: 1px double #5a3a1b;">
-            </header>
 
-            <main>
-                {% block body %}{% endblock %}
-            </main>
-        </div>
+        <nav class="navbar-medieval">
+            <div class="nav-container">
+                <h1 class="logo">⚔️ Fast Dungeon</h1>
+                
+                <div class="nav-links">
+                    {% if app.user %}
+                        <span class="aventurier-name">Aventurier : <strong>{{ app.user.pseudo }}</strong></span>
+                        <a href="{{ path('app_logout') }}" class="btn-quitter">Quitter la taverne</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <main class="page-parchemin">
+            {% block body %}{% endblock %}
+        </main>
 
         {% block javascripts %}{% endblock %}
     </body>
