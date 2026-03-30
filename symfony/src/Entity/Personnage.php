@@ -33,11 +33,6 @@ class Personnage
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomImage = null;
 
-    #[ORM\ManyToOne(inversedBy: 'personnages')]
-    private ?Race $race = null;
-
-    #[ORM\ManyToOne(inversedBy: 'personnages')]
-    private ?PersonnageClasse $classe = null;
 
     public function getId(): ?int
     {
@@ -112,30 +107,6 @@ class Personnage
     public function setNomImage(?string $nomImage): static
     {
         $this->nomImage = $nomImage;
-
-        return $this;
-    }
-
-    public function getRace(): ?Race
-    {
-        return $this->race;
-    }
-
-    public function setRace(?Race $race): static
-    {
-        $this->race = $race;
-
-        return $this;
-    }
-
-    public function getClasse(): ?PersonnageClasse
-    {
-        return $this->classe;
-    }
-
-    public function setClasse(?PersonnageClasse $classe): static
-    {
-        $this->classe = $classe;
 
         return $this;
     }
