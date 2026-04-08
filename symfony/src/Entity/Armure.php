@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\ArmeRepository;
+use App\Repository\ArmureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ArmeRepository::class)]
-class Arme
+#[ORM\Entity(repositoryClass: ArmureRepository::class)]
+class Armure
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,15 +26,15 @@ class Arme
     private ?int $bonus = null;
 
     /**
-     * Relation "avoir3" inverse : une Arme peut être tenue par plusieurs Personnages (0,n)
+     * Relation "porter" inverse : une Armure peut être portée par plusieurs Personnages (0,n)
      */
-    #[ORM\OneToMany(targetEntity: Personnage::class, mappedBy: 'arme')]
+    #[ORM\OneToMany(targetEntity: Personnage::class, mappedBy: 'armure')]
     private Collection $personnages;
 
     /**
-     * Relation "avoir5" inverse : une Arme peut être tenue par plusieurs Pnj (0,n)
+     * Relation "porter2" inverse : une Armure peut être portée par plusieurs Pnj (0,n)
      */
-    #[ORM\OneToMany(targetEntity: Pnj::class, mappedBy: 'arme')]
+    #[ORM\OneToMany(targetEntity: Pnj::class, mappedBy: 'armure')]
     private Collection $pnjs;
 
     public function __construct()
@@ -59,14 +59,14 @@ class Arme
     {
         if (!$this->personnages->contains($personnage)) {
             $this->personnages->add($personnage);
-            $personnage->setArme($this);
+            $personnage->setArmure($this);
         }
         return $this;
     }
     public function removePersonnage(Personnage $personnage): static
     {
         if ($this->personnages->removeElement($personnage)) {
-            if ($personnage->getArme() === $this) { $personnage->setArme(null); }
+            if ($personnage->getArmure() === $this) { $personnage->setArmure(null); }
         }
         return $this;
     }
@@ -76,14 +76,14 @@ class Arme
     {
         if (!$this->pnjs->contains($pnj)) {
             $this->pnjs->add($pnj);
-            $pnj->setArme($this);
+            $pnj->setArmure($this);
         }
         return $this;
     }
     public function removePnj(Pnj $pnj): static
     {
         if ($this->pnjs->removeElement($pnj)) {
-            if ($pnj->getArme() === $this) { $pnj->setArme(null); }
+            if ($pnj->getArmure() === $this) { $pnj->setArmure(null); }
         }
         return $this;
     }

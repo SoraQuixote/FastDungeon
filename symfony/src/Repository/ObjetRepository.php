@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\Parhemin;
+use App\Entity\Objet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Parhemin>
+ * @extends ServiceEntityRepository<Objet>
  */
-class ParheminRepository extends ServiceEntityRepository
+class ObjetRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Parhemin::class);
+        parent::__construct($registry, Objet::class);
     }
 
 //    /**
-//     * @return Parhemin[] Returns an array of Parhemin objects
+//     * @return Objet[] Returns an array of Objet objects
 //     */
 //    public function findByExampleField($value): array
 //    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
+//        return $this->createQueryBuilder('o')
+//            ->andWhere('o.exampleField = :val')
 //            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
+//            ->orderBy('o.id', 'ASC')
 //            ->setMaxResults(10)
 //            ->getQuery()
 //            ->getResult()
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Parhemin
+//    public function findOneBySomeField($value): ?Objet
 //    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
+//        return $this->createQueryBuilder('o')
+//            ->andWhere('o.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->getQuery()
 //            ->getOneOrNullResult()

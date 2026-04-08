@@ -3,7 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PersonnageRepository;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PersonnageRepository::class)]
@@ -20,94 +21,184 @@ class Personnage
     #[ORM\Column(length: 100)]
     private ?string $prenom = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $personnageUser = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $carnetDeVoyage = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $inventaire = null;
 
-    #[ORM\ManyToOne(inversedBy: 'personnages')]
+    #[ORM\Column]
+    private ?int $pointDeVie = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $histoire = null;
+
+    #[ORM\Column]
+    private ?int $niveau = null;
+
+    #[ORM\Column]
+    private ?int $stateForce = null;
+
+    #[ORM\Column]
+    private ?int $stateConstitution = null;
+
+    #[ORM\Column]
+    private ?int $stateRapidite = null;
+
+    #[ORM\Column]
+    private ?int $stateIntelligence = null;
+
+    #[ORM\Column]
+    private ?int $resistancePhysique = null;
+
+    #[ORM\Column]
+    private ?int $resistanceMagique = null;
+
+    #[ORM\Column]
+    private ?int $resistanceMentale = null;
+
+    // ── Relations ──────────────────────────────────────────
+
+    /**
+     * Relation "posseder" : un Personnage appartient à un User (1,1)
+     */
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'personnages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $nomImage = null;
+    /**
+     * Relation "porter" : un Personnage porte 0 ou 1 Armure (0,1)
+     */
+    #[ORM\ManyToOne(targetEntity: Armure::class, inversedBy: 'personnages')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Armure $armure = null;
 
+    /**
+     * Relation "avoir3" : un Personnage possède 0 ou 1 Arme (0,1)
+     */
+    #[ORM\ManyToOne(targetEntity: Arme::class, inversedBy: 'personnages')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Arme $arme = null;
 
-    public function getId(): ?int
+    /**
+     * Relation "detenir" : un Personnage peut détenir plusieurs Objets (0,n)
+     */
+    #[ORM\ManyToMany(targetEntity: Objet::class, inversedBy: 'personnages')]
+    #[ORM\JoinTable(name: 'personnage_objet')]
+    private Collection $objets;
+
+    /**
+     * Relation "avoir" : un Personnage peut avoir plusieurs Attaques (ManyToMany)
+     */
+    #[ORM\ManyToMany(targetEntity: Attaque::class, inversedBy: 'personnages')]
+    #[ORM\JoinTable(name: 'personnage_attaque')]
+    private Collection $attaques;
+
+    /**
+     * Relation "associer" : un Personnage peut être associé à plusieurs Campagnes (ManyToMany)
+     */
+    #[ORM\ManyToMany(targetEntity: Campagne::class, inversedBy: 'personnages')]
+    #[ORM\JoinTable(name: 'personnage_campagne')]
+    private Collection $campagnes;
+
+    public function __construct()
     {
-        return $this->id;
+        $this->objets = new ArrayCollection();
+        $this->attaques = new ArrayCollection();
+        $this->campagnes = new ArrayCollection();
     }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
+    // ── Getters / Setters ──────────────────────────────────
 
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
+    public function getId(): ?int { return $this->id; }
 
+    public function getNom(): ?string { return $this->nom; }
+    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
+
+    public function getPrenom(): ?string { return $this->prenom; }
+    public function setPrenom(string $prenom): static { $this->prenom = $prenom; return $this; }
+
+    public function getPersonnageUser(): ?string { return $this->personnageUser; }
+    public function setPersonnageUser(?string $personnageUser): static { $this->personnageUser = $personnageUser; return $this; }
+
+    public function getCarnetDeVoyage(): ?string { return $this->carnetDeVoyage; }
+    public function setCarnetDeVoyage(?string $carnetDeVoyage): static { $this->carnetDeVoyage = $carnetDeVoyage; return $this; }
+
+    public function getInventaire(): ?string { return $this->inventaire; }
+    public function setInventaire(?string $inventaire): static { $this->inventaire = $inventaire; return $this; }
+
+    public function getPointDeVie(): ?int { return $this->pointDeVie; }
+    public function setPointDeVie(int $pointDeVie): static { $this->pointDeVie = $pointDeVie; return $this; }
+
+    public function getHistoire(): ?string { return $this->histoire; }
+    public function setHistoire(?string $histoire): static { $this->histoire = $histoire; return $this; }
+
+    public function getNiveau(): ?int { return $this->niveau; }
+    public function setNiveau(int $niveau): static { $this->niveau = $niveau; return $this; }
+
+    public function getStateForce(): ?int { return $this->stateForce; }
+    public function setStateForce(int $stateForce): static { $this->stateForce = $stateForce; return $this; }
+
+    public function getStateConstitution(): ?int { return $this->stateConstitution; }
+    public function setStateConstitution(int $stateConstitution): static { $this->stateConstitution = $stateConstitution; return $this; }
+
+    public function getStateRapidite(): ?int { return $this->stateRapidite; }
+    public function setStateRapidite(int $stateRapidite): static { $this->stateRapidite = $stateRapidite; return $this; }
+
+    public function getStateIntelligence(): ?int { return $this->stateIntelligence; }
+    public function setStateIntelligence(int $stateIntelligence): static { $this->stateIntelligence = $stateIntelligence; return $this; }
+
+    public function getResistancePhysique(): ?int { return $this->resistancePhysique; }
+    public function setResistancePhysique(int $resistancePhysique): static { $this->resistancePhysique = $resistancePhysique; return $this; }
+
+    public function getResistanceMagique(): ?int { return $this->resistanceMagique; }
+    public function setResistanceMagique(int $resistanceMagique): static { $this->resistanceMagique = $resistanceMagique; return $this; }
+
+    public function getResistanceMentale(): ?int { return $this->resistanceMentale; }
+    public function setResistanceMentale(int $resistanceMentale): static { $this->resistanceMentale = $resistanceMentale; return $this; }
+
+    public function getUser(): ?User { return $this->user; }
+    public function setUser(?User $user): static { $this->user = $user; return $this; }
+
+    public function getArmure(): ?Armure { return $this->armure; }
+    public function setArmure(?Armure $armure): static { $this->armure = $armure; return $this; }
+
+    public function getArme(): ?Arme { return $this->arme; }
+    public function setArme(?Arme $arme): static { $this->arme = $arme; return $this; }
+
+    public function getObjets(): Collection { return $this->objets; }
+    public function addObjet(Objet $objet): static
+    {
+        if (!$this->objets->contains($objet)) { $this->objets->add($objet); }
         return $this;
     }
+    public function removeObjet(Objet $objet): static { $this->objets->removeElement($objet); return $this; }
 
-    public function getPrenom(): ?string
+    public function getAttaques(): Collection { return $this->attaques; }
+    public function addAttaque(Attaque $attaque): static
     {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): static
-    {
-        $this->prenom = $prenom;
-
+        if (!$this->attaques->contains($attaque)) { $this->attaques->add($attaque); }
         return $this;
     }
+    public function removeAttaque(Attaque $attaque): static { $this->attaques->removeElement($attaque); return $this; }
 
-    public function getCarnetDeVoyage(): ?string
+    public function getCampagnes(): Collection { return $this->campagnes; }
+    public function addCampagne(Campagne $campagne): static
     {
-        return $this->carnetDeVoyage;
-    }
-
-    public function setCarnetDeVoyage(?string $carnetDeVoyage): static
-    {
-        $this->carnetDeVoyage = $carnetDeVoyage;
-
+        if (!$this->campagnes->contains($campagne)) {
+            $this->campagnes->add($campagne);
+            $campagne->addPersonnage($this);
+        }
         return $this;
     }
-
-    public function getInventaire(): ?string
+    public function removeCampagne(Campagne $campagne): static
     {
-        return $this->inventaire;
-    }
-
-    public function setInventaire(string $inventaire): static
-    {
-        $this->inventaire = $inventaire;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    public function getNomImage(): ?string
-    {
-        return $this->nomImage;
-    }
-
-    public function setNomImage(?string $nomImage): static
-    {
-        $this->nomImage = $nomImage;
-
+        if ($this->campagnes->removeElement($campagne)) {
+            $campagne->removePersonnage($this);
+        }
         return $this;
     }
 }

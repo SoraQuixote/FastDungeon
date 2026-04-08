@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Arme;
+use App\Entity\AttaqueMagique;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Arme>
+ * @extends ServiceEntityRepository<AttaqueMagique>
  */
-class ArmeRepository extends ServiceEntityRepository
+class AttaqueMagiqueRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Arme::class);
+        parent::__construct($registry, AttaqueMagique::class);
     }
 
 //    /**
-//     * @return Arme[] Returns an array of Arme objects
+//     * @return AttaqueMagique[] Returns an array of AttaqueMagique objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -31,7 +31,7 @@ class ArmeRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Arme
+//    public function findOneBySomeField($value): ?AttaqueMagique
 //    {
 //        return $this->createQueryBuilder('a')
 //            ->andWhere('a.exampleField = :val')
