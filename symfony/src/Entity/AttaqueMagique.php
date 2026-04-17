@@ -29,5 +29,12 @@ class AttaqueMagique extends Attaque
     public function setPtsDeVie(?int $ptsDeVie): static { $this->ptsDeVie = $ptsDeVie; return $this; }
 
     public function getTypeMagique(): ?TypeMagique { return $this->typeMagique; }
-    public function setTypeMagique(?TypeMagique $typeMagique): static { $this->typeMagique = $typeMagique; return $this; }
+    public function setTypeMagique(?TypeMagique $typeMagique): static { $this->typeMagique = $tyseMagique; return $this; }
+
+    public function getDiscriminatorType(): string
+    {
+        return 'magique';
+    }
+
+
 }

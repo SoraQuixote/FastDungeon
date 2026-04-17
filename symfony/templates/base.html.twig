@@ -23,12 +23,15 @@
                 
                 <div class="nav-links">
                     {% if app.user %}
+                        <a href="{{ path('app_personnage_index') }}" class="link-medieval">Mes Personnages</a>
                         <span class="aventurier-name">Aventurier : <strong>{{ app.user.pseudo }}</strong></span>
                         <a href="{{ path('app_logout') }}" class="btn-quitter">Quitter la taverne</a>
                     {% endif %}
                 </div>
             </div>
         </nav>
+
+        
 
         <main class="page-parchemin">
             {% block body %}{% endblock %}

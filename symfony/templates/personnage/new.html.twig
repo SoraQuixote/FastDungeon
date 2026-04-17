@@ -8,11 +8,12 @@
 
 {% block body %}
 
-<form method="post" enctype="multipart/form-data" class="fiche-personnage">
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="personnage[_token]" value="{{ csrf_token('personnage') }}">
 
     {# ===== EN-TÊTE ===== #}
     <div class="fiche-header">
-        <button type="submit" class="btn-medieval">📜 Sauvegarder</button>
+        <button type="submit" class="btn-medieval"> Sauvegarder</button>
         <h2 class="fiche-titre">✦ Création du Personnage ✦</h2>
         <div class="fiche-header-actions">
             {# Le bouton ouvre maintenant la modale de création #}
@@ -91,7 +92,7 @@
             </div>
 
             <div class="cat-attaque-section">
-                <h4>✨ Magiques</h4>
+                <h4> Magiques</h4>
                 <div id="liste-magique" class="attaques-container">
                     <p class="empty-msg">Aucun sort magique.</p>
                 </div>
@@ -116,54 +117,83 @@
 
     {# ===== MODALE DE CRÉATION / MODIFICATION D'ATTAQUE ===== #}
     <div id="modalAttaque" class="modal-medieval" style="display:none;">
-        <div class="modal-content">
-            <h3 id="modalTitle">✨ Nouvelle Capacité</h3>
-            <input type="hidden" id="edit_index">
+ <div class="modal-content">
+    <h3 id="modalTitle"> Nouvelle Capacité</h3>
+    <input type="hidden" id="edit_index">
 
-            <div class="form-group">
-                <label>Type d'attaque</label>
-                <select id="atk_type" onchange="toggleTypeFields()">
-                    <option value="physique">Physique</option>
-                    <option value="magique">Magique</option>
+    <div class="form-row">
+        <div class="form-group">
+            <label>Type d'attaque</label>
+            <select id="atk_type" onchange="toggleTypeFields()">
+                <option value="physique">Physique</option>
+                <option value="magique">Magique</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Nom</label>
+            <input type="text" id="atk_nom">
+        </div>
+    </div>
+
+    <!-- CHAMPS GLOBAUX (Attaque) -->
+    <div class="form-row">
+        <div>
+            <label>Dégâts (ptsDegat)</label>
+            <input type="number" id="atk_degat">
+        </div>
+        <div>
+            <label>Coût (cout)</label>
+            <input type="number" id="atk_cout_global">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div>
+            <label>Portée</label>
+            <input type="text" id="atk_portee">
+        </div>
+        <div>
+            <label>Effet</label>
+            <input type="text" id="atk_effet">
+        </div>
+    </div>
+
+    <!-- SPÉCIFIQUE PHYSIQUE -->
+    <div id="field_contre">
+        <label>Dégât de Contre</label>
+        <input type="number" id="atk_contre">
+    </div>
+
+    <!-- SPÉCIFIQUE MAGIQUE -->
+    <div id="field_magie" style="display:none;">
+        <div class="form-row">
+            <div>
+                <label>ptsDeVie</label>
+                <input type="number" id="atk_magie_pv">
+            </div>
+            <div>
+                <label>Type de Magie</label>
+                <select id="atk_magie_type">
+                    <option value="Magie noire">Magie noire</option>
+                    <option value="Magie blanche">Magie blanche</option>
                 </select>
-            </div>
-
-            <div class="form-group">
-                <label>Nom</label>
-                <input type="text" id="atk_nom">
-            </div>
-
-            <div class="form-row">
-                <div>
-                    <label>Dégâts</label>
-                    <input type="number" id="atk_degat">
-                </div>
-                <div id="field_contre">
-                    <label>Dégât Contre</label>
-                    <input type="number" id="atk_contre">
-                </div>
-                <div id="field_magie" style="display:none;">
-                    <label>Coût (Mana/Vie)</label>
-                    <input type="number" id="atk_cout">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Description / Effet</label>
-                <textarea id="atk_desc"></textarea>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn-medieval" onclick="sauvegarderAttaque()">Enregistrer</button>
-                <button type="button" class="btn-medieval btn-quitter" onclick="closeAttaqueModal()">Annuler</button>
             </div>
         </div>
     </div>
 
+    <div class="form-group">
+        <label>Description détaillée</label>
+        <textarea id="atk_desc" rows="2"></textarea>
+    </div>
+
+    <div class="modal-actions">
+        <button type="button" class="btn-medieval" onclick="sauvegarderAttaque()">Enregistrer</button>
+        <button type="button" class="btn-medieval btn-quitter" onclick="closeAttaqueModal()">Annuler</button>
+    </div>
+ </div>
 </form>
 
 {% endblock %}
-
 {% block javascripts %}
     <script src="{{ asset('js/fiche-personnage.js') }}"></script>
 {% endblock %}

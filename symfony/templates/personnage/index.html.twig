@@ -1,28 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes perssonages{% endblock %}
+{% block title %}Mes Personnages{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/personnage-index.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1> Mes Personnages </h1>
+<div class="taverne-container">
+    <div class="taverne-header">
+        <h1 class="medieval-title"> Registre de mes personnages </h1>
+        <a href="{{ path('app_personnage_new') }}" class="btn-medieval">Créer un Personnage</a>
+    </div>
 
-    <table class="table">
-        <tbody>
+    <div class="personnages-grid">
         {% for personnage in personnages %}
-            <tr>
-                <td>{{ personnage.nom }}</td>
-                <td>{{ personnage.prenom }}</td>
-                <td>
-                    <a href="{{ path('app_personnage_show', {'id': personnage.id}) }}">show</a>
-                    <a href="{{ path('app_personnage_edit', {'id': personnage.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">Vous n'avez aucun perssonages pour le moments</td>
-            </tr>
+            <a href="{{ path('app_personnage_edit', {'id': personnage.id}) }}" class="perso-card-link">
+                <div class="perso-card">
+                    <div class="perso-frame">
+                        <img src="{{ personnage.portrait 
+                            ? asset('uploads/portraits/' ~ personnage.portrait) 
+                            : asset('images/default-avatar.png') }}" 
+                            alt="Portrait" class="perso-portrait">
+                    </div>
+                    
+                    <div class="perso-info">
+                        <h2 class="perso-nom">{{ personnage.prenom }} {{ personnage.nom }}</h2>
+                        <p class="perso-stats">Niveau {{ personnage.niveau|default(1) }}</p>
+                    </div>
+                </div>
+            </a>
         {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_personnage_new') }}">Nouveau perssonage</a>
+    </div>
+</div>
 {% endblock %}

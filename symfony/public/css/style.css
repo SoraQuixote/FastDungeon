@@ -93,6 +93,128 @@ input, textarea, select {
     font-family: 'Cinzel', serif;
     padding: 5px;
 }
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700&display=swap');
+
+.taverne-container {
+    padding: 40px;
+    min-height: 100vh;
+    color: #f2e3c9;
+}
+
+.taverne-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.medieval-title {
+    font-family: 'MedievalSharp', cursive;
+    font-size: 3rem;
+    color: #d4af37; /* Or */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    margin-bottom: 20px;
+}
+
+/* Grille de cartes */
+.personnages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* La Carte */
+.perso-card {
+    background: #f7f1dc url('https://www.transparenttextures.com/patterns/parchment.png');
+    border: 10px solid #3d2b1f;
+    border-image: url('https://i.imgur.com/8SNoX9r.png') 30 stretch; /* Optionnel: bordure décorative */
+    padding: 20px;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.perso-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.2);
+}
+
+/* Portrait dans la carte */
+.perso-frame {
+    width: 150px;
+    height: 180px; /* On augmente un peu la hauteur */
+    margin: 0 auto 15px;
+    border: 4px solid #5a3a1b;
+    border-radius: 8px; /* Carré arrondi au lieu de 50% (cercle) */
+    overflow: hidden;
+    background: #2b1d0f;
+    box-shadow: inset 0 0 10px #000;
+}
+
+.perso-portrait {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* L'image sera vue de la tête aux pieds */
+    filter: sepia(0.3) contrast(1.1);
+}
+
+.perso-nom {
+    font-family: 'Cinzel', serif;
+    color: #4a3321;
+    font-size: 1.4rem;
+    margin: 10px 0 5px;
+    border-bottom: 1px double #5a3a1b;
+}
+
+.perso-stats {
+    font-family: 'MedievalSharp';
+    color: #7a4a21;
+    font-size: 1.1rem;
+}
+
+/* Boutons d'action en bas de carte */
+.perso-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.action-link {
+    text-decoration: none;
+    font-size: 1.5rem;
+    padding: 5px 12px;
+    border-radius: 5px;
+    background: #5a3a1b;
+    color: #f7f1dc;
+    transition: 0.2s;
+}
+
+.action-link:hover {
+    background: #d4af37;
+    color: #1a120b;
+}
+
+/* Bouton principal */
+.btn-medieval {
+    display: inline-block;
+    padding: 12px 25px;
+    background: linear-gradient(#7a4a21, #4b2c12);
+    border: 2px solid #d4af37;
+    color: #f7f1dc;
+    font-family: 'Cinzel';
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 4px 0 #2b1d0f;
+}
+
+.btn-medieval:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #2b1d0f;
+}
+
 /* ===================================================
    FICHE PERSONNAGE — à coller à la fin de style.css
 =================================================== */
@@ -131,67 +253,55 @@ input, textarea, select {
 /* ===== LAYOUT 3 COLONNES (comme le fichier HTML original) ===== */
 .fiche-main {
     display: grid;
-    grid-template-columns: 200px 200px 1fr;
-    gap: 20px;
+    /* On fixe la colonne portrait à 230px, la colonne stats à 230px, 
+       et on laisse le reste respirer */
+    grid-template-columns: 230px 230px 1.5fr 1fr; 
+    gap: 25px;
     margin-top: 20px;
+    align-items: start; /* Évite que les colonnes s'étirent bizarrement vers le bas */
 }
 
 /* ===== COLONNE GAUCHE : Identité + Portrait ===== */
+.fiche-col-gauche {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espace constant entre Nom, Prénom, Niveau et Portrait */
+}
+
 .fiche-col-gauche label {
     font-weight: bold;
-    margin-bottom: 4px;
-    display: block;
     color: #5a3a1b;
+    display: block; /* On revient à un block standard */
+    margin-bottom: 2px;
 }
 
 .fiche-col-gauche input {
     width: 100%;
     padding: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 5px; /* Un petit saut après chaque input */
 }
 
 .portrait-zone {
-    height: 250px;
+    width: 100%; 
+    /* On augmente la hauteur pour que l'image soit imposante */
+    height: 300px; 
     margin-top: 10px;
-    border: 4px solid #5a3a1b;
-    background: radial-gradient(circle, #d6c9a2, #b9a36a);
+    border: 4px double #5a3a1b;
+    background: rgba(0, 0, 0, 0.2); 
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
     overflow: hidden;
-    position: relative;
-}
-
-.portrait-zone:hover {
-    box-shadow: 0 0 12px rgba(90,58,27,0.5);
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
 }
 
 .portrait-zone img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-}
-
-#portraitPlaceholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.portrait-icone {
-    font-size: 3rem;
-}
-
-.portrait-texte {
-    font-style: italic;
-    font-size: 0.8rem;
-    color: #5a3a1b;
-    text-align: center;
-    padding: 5px;
-    opacity: 0.8;
+    /* 'cover' remplira mieux le cadre si l'image est bien cadrée, 
+       sinon garde 'contain' pour ne rien couper */
+    object-fit: cover; 
+    filter: sepia(0.2) contrast(1.1);
 }
 
 /* ===== COLONNE CENTRE : Stats ===== */
@@ -336,7 +446,13 @@ input, textarea, select {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .fiche-main {
-        grid-template-columns: 1fr;
+    display: grid;
+    /* On fixe la colonne portrait à 230px, la colonne stats à 230px, 
+       et on laisse le reste respirer */
+    grid-template-columns: 230px 230px 1.5fr 1fr; 
+    gap: 25px;
+    margin-top: 20px;
+    align-items: start; /* Évite que les colonnes s'étirent bizarrement vers le bas */
     }
 
     .fiche-header {
@@ -355,27 +471,76 @@ input, textarea, select {
 /* Layout 4 colonnes ou ajustement */
 .fiche-main {
     display: grid;
-    grid-template-columns: 1fr 1fr 1.5fr 1fr; /* On donne plus de place aux attaques */
-    gap: 20px;
+    /* On fixe la colonne portrait à 230px, la colonne stats à 230px, 
+       et on laisse le reste respirer */
+    grid-template-columns: 230px 230px 1.5fr 1fr; 
+    gap: 25px;
+    margin-top: 20px;
+    align-items: start; /* Évite que les colonnes s'étirent bizarrement vers le bas */
 }
-
-/* Modale */
-.modal-medieval {
-    display: none; 
-    position: fixed;
-    z-index: 1000;
-    left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.8);
-}
-
+/* --- MODALE STYLE PARCHEMIN CLAIR --- */
 .modal-content {
-    background: #2c1e14;
-    border: 3px solid #d4af37;
-    margin: 10% auto;
-    padding: 20px;
-    width: 400px;
-    color: #f0e6d2;
-    box-shadow: 0 0 20px #000;
+    background: #fdf5e6; /* Couleur crème/parchemin clair */
+    background-image: url('https://www.transparenttextures.com/patterns/old-map.png'); /* Texture légère */
+    border: 8px double #5a3a1b; /* Bordure double pour le style ancien */
+    margin: 5% auto;
+    padding: 25px;
+    width: 450px;
+    color: #2b1d0f; /* Texte sombre pour la lisibilité */
+    box-shadow: 0 0 30px rgba(0,0,0,0.7), inset 0 0 50px rgba(0,0,0,0.1);
+    border-radius: 2px;
+}
+
+#modalTitle {
+    text-align: center;
+    border-bottom: 2px solid #5a3a1b;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- FORMULAIRE DANS LA MODALE --- */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #5a3a1b;
+}
+
+/* On force les inputs de la modale à être bien visibles */
+.modal-content input, 
+.modal-content select, 
+.modal-content textarea {
+    width: 100%;
+    background: #fff9eb !important; /* Jaune très pâle */
+    border: 1px solid #8d6e63 !important;
+    color: #2b1d0f !important;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row div {
+    flex: 1;
+}
+
+/* Actions de la modale */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #d4af37;
 }
 
 /* Style des cartes d'attaques ajoutées */
@@ -401,26 +566,253 @@ input, textarea, select {
     border: 1px dashed #d4af37;
 }
 
+/* Style de la carte d'attaque */
 .attaque-card-blanche {
+    position: relative; /* Important pour le positionnement de la description */
     background: #ffffff;
     color: #333;
     padding: 10px;
     margin-bottom: 8px;
     border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    cursor: help; /* Change le curseur pour indiquer une info */
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
 }
 
-.attaque-card-blanche:hover {
-    transform: translateX(5px);
-    background: #f0f0f0;
+/* La description cachée par défaut */
+.attaque-desc-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    width: 250px;
+    background-color: #5a3a1b;
+    color: #f7f1dc;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%; /* Affiche au-dessus de la carte */
+    left: 50%;
+    transform: translateX(-50%);
+    transition: opacity 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    font-size: 0.85rem;
+    pointer-events: none; /* Évite de bloquer la souris */
+}
+
+/* Petit triangle en dessous de l'infobulle */
+.attaque-desc-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #5a3a1b transparent transparent transparent;
+}
+
+/* Affichage au survol */
+.attaque-card-blanche:hover .attaque-desc-tooltip {
+    visibility: visible;
+    opacity: 1;
 }
 
 .modal-medieval {
     /* Style précédent mais assurez-vous du display none */
     display: none;
+}
+/* --- POSITIONNEMENT DE LA MODALE EN PREMIER PLAN --- */
+.modal-medieval {
+    display: none;          /* Caché par défaut, géré par JS */
+    position: fixed;       /* Reste fixé à l'écran même si on scroll */
+    z-index: 9999;         /* Passe au-dessus de TOUT le reste */
+    left: 0;
+    top: 0;
+    width: 100%;           /* Couvre toute la largeur */
+    height: 100%;          /* Couvre toute la hauteur */
+    overflow: auto;        /* Permet de scroller si le contenu est trop grand */
+    background-color: rgba(0, 0, 0, 0.6); /* Fond semi-transparent pour assombrir l'arrière-plan */
+    backdrop-filter: blur(3px); /* Optionnel : floute légèrement le fond pour le style */
+}
+
+.modal-content {
+    background: #fdf5e6;
+    background-image: url('https://www.transparenttextures.com/patterns/old-map.png');
+    border: 8px double #5a3a1b;
+    margin: 10vh auto;     /* 10% de la hauteur de l'écran par rapport au haut */
+    padding: 25px;
+    width: 90%;            /* Largeur adaptative */
+    max-width: 500px;      /* Largeur max fixe */
+    color: #2b1d0f;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;    /* Pour s'assurer qu'il est bien dans le contexte de la modale */
+}
+/* Empêche la colonne de couper l'infobulle qui dépasse */
+.fiche-col-attaques {
+    overflow: visible !important;
+}
+
+/* Force l'affichage de l'infobulle */
+.attaque-card-blanche {
+    position: relative;
+    overflow: visible !important;
+    z-index: 1;
+}
+
+.attaque-card-blanche:hover {
+    z-index: 999; /* Passe au dessus des autres cartes au survol */
+}
+
+.attaque-desc-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    width: 200px;
+    background-color: #2b1d0f;
+    color: #f7f1dc;
+    padding: 8px;
+    position: absolute;
+    bottom: 110%; /* Juste au dessus */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    transition: opacity 0.2s;
+    border: 1px solid #d4af37;
+    pointer-events: none;
+}
+
+.attaque-card-blanche:hover .attaque-desc-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+/* Conteneur principal */
+.journal-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+/* Le livre ouvert */
+.journal-book {
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+    height: 500px;
+    background-color: #e2c699; /* Couleur papier */
+    background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); /* Texture parchemin */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 50px rgba(0,0,0,0.2);
+    border: 8px solid #3d2b1f; /* Reliure */
+    border-radius: 5px;
+    position: relative;
+}
+
+/* Ligne centrale (pliure du livre) */
+.journal-book::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 2;
+}
+
+/* Style des pages */
+.journal-page {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.journal-label {
+    font-family: 'MedievalSharp', cursive; /* Ou une police calligraphique */
+    font-size: 1.4rem;
+    color: #4a3321;
+    text-align: center;
+    border-bottom: 1px solid rgba(74, 51, 33, 0.3);
+    margin-bottom: 15px;
+}
+
+/* Textarea invisible (on ne voit que le texte sur le papier) */
+.journal-textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'Cormorant Garamond', serif; /* Police de style écriture plume */
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #2b1d0f;
+    resize: none;
+    background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 100% 1.6em; /* Lignes pour aider à l'écriture */
+}
+
+/* Responsive : sur petit écran, on empile les pages */
+@media (max-width: 768px) {
+    .journal-book {
+        flex-direction: column;
+        height: auto;
+    }
+    .journal-book::before { display: none; }
+}
+
+.attaques-container {
+    min-height: 80px;
+    max-height: 150px;    /* hauteur fixe — ne pousse plus les autres éléments */
+    overflow-y: auto;
+}
+
+.cat-attaque-section {
+    border: 0.5px solid var(--color-border-tertiary, #ddd);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.cat-attaque-section h4 {
+    background: var(--color-background-secondary);
+    padding: 5px 10px;
+    font-size: 12px;
+    margin: 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary, #ddd);
+}
+.btn-registre {
+    position: relative;
+    padding: 10px 20px;
+    margin-right: 20px;
+    background: #4a2c2a; /* Marron cuir profond */
+    color: #d4af37 !important; /* Couleur Or */
+    text-decoration: none;
+    font-family: 'MedievalSharp', serif; /* Ou ta police médiévale */
+    text-transform: uppercase;
+    font-weight: bold;
+    border: 2px solid #d4af37;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.5);
+    
+    /* On applique ton filtre SVG pour l'effet irrégulier */
+    filter: url(#rough-edges);
+    
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.link-medieval {
+    color: #d4af37; /* Marron foncé pour rappeler l'encre */
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 25px;
+    padding-bottom: 3px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.link-medieval:hover {
+    color: #d4af37; /* Brun plus clair au survol */
+    border-bottom: 2px solid #8d6e63; /* Soulignement discret */
 }
