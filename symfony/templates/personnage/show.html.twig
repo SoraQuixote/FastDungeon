@@ -1,38 +1,70 @@
+{# templates/personnage/show.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Personnage{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/personnage-new.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Personnage</h1>
+<div class="taverne-container">
+    <div class="form-parchemin">
+        {# Header avec boutons d'action #}
+        <div class="fiche-header-actions" style="display: flex; justify-content:空间-between; margin-bottom: 20px;">
+            <a href="{{ path('app_personnage_index') }}" class="btn-medieval">Quitter la taverne</a>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ path('app_personnage_edit', {'id': personnage.id}) }}" class="btn-medieval">Modifier</a>
+                {# Le bouton Supprimer intégré ici #}
+                <form method="post" action="{{ path('app_personnage_delete', {'id': personnage.id}) }}" onsubmit="return confirm('Voulez-vous vraiment bannir ce héros de la taverne ?');" style="display:inline-block;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ personnage.id) }}">
+                    <button class="btn-medieval" style="background-color: #5a0000; color: white;">Supprimer</button>
+                </form>
+            </div>
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ personnage.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ personnage.nom }}</td>
-            </tr>
-            <tr>
-                <th>Prenom</th>
-                <td>{{ personnage.prenom }}</td>
-            </tr>
-            <tr>
-                <th>CarnetDeVoyage</th>
-                <td>{{ personnage.carnetDeVoyage }}</td>
-            </tr>
-            <tr>
-                <th>Inventaire</th>
-                <td>{{ personnage.inventaire }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <h1 class="medieval-title">✦ Fiche du Personnage ✦</h1>
 
-    <a href="{{ path('app_personnage_index') }}">back to list</a>
+        <div class="fiche-layout" style="display: flex; gap: 20px;">
+            {# Colonne Gauche #}
+            <div class="col-left" style="flex: 1;">
+                <p><strong>NOM :</strong> {{ personnage.nom }}</p>
+                <p><strong>PRÉNOM :</strong> {{ personnage.prenom }}</p>
+                <p><strong>NIVEAU :</strong> {{ personnage.niveau|default(1) }}</p>
+                
+                <div class="portrait-box-show" style="width: 100%; height: 200px; border: 2px solid #8b5a2b; margin-top: 10px;">
+                    <img src="{{ personnage.portrait ? asset('uploads/portraits/' ~ personnage.portrait) : asset('images/default-avatar.png') }}" 
+                         style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
 
-    <a href="{{ path('app_personnage_edit', {'id': personnage.id}) }}">edit</a>
+            {# Colonne Milieu (Stats) #}
+            <div class="col-center" style="flex: 1;">
+                <p><strong>VIE :</strong> {{ personnage.vieActuelle }} / {{ personnage.pointDeVie }}</p>
+                <div class="stats-list">
+                    <p>FORCE : {{ personnage.stateForce|default(0) }}</p>
+                    <p>CONSTITUTION : {{ personnage.stateConstitution|default(0) }}</p>
+                    <p>RAPIDITÉ : {{ personnage.stateRapidite|default(0) }}</p>
+                    <p>INTELLIGENCE : {{ personnage.stateIntelligence|default(0) }}</p>
+                </div>
+            </div>
 
-    {{ include('personnage/_delete_form.html.twig') }}
+            {# Colonne Droite (Textes) #}
+            <div class="col-right" style="flex: 1.5;">
+                <p><strong>CARNET DE VOYAGE :</strong></p>
+                <div class="scroll-box" style="background: rgba(0,0,0,0.05); padding: 10px; height: 100px; overflow-y: auto;">
+                    {{ personnage.carnetDeVoyage|nl2br }}
+                </div>
+
+                <p style="margin-top: 10px;"><strong>HISTOIRE :</strong></p>
+                <div class="scroll-box" style="background: rgba(0,0,0,0.05); padding: 10px; height: 150px; overflow-y: auto;">
+                    {{ personnage.histoire|nl2br }}
+                </div>
+            </div>
+        </div>
+
+        <div class="inventaire-box" style="margin-top: 20px; border-top: 2px solid #8b5a2b; padding-top: 10px;">
+            <p><strong>INVENTAIRE :</strong></p>
+            <p>{{ personnage.inventaire|default('Sac vide.') }}</p>
+        </div>
+    </div>
+</div>
 {% endblock %}

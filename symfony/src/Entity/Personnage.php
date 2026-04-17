@@ -60,6 +60,12 @@ class Personnage
     #[ORM\Column]
     private ?int $resistanceMentale = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $vieActuelle = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $portrait = null;
+
     // ── Relations ──────────────────────────────────────────
 
     /**
@@ -180,7 +186,10 @@ class Personnage
     public function getAttaques(): Collection { return $this->attaques; }
     public function addAttaque(Attaque $attaque): static
     {
-        if (!$this->attaques->contains($attaque)) { $this->attaques->add($attaque); }
+        if (!$this->attaques->contains($attaque)) {
+            $this->attaques->add($attaque);
+            $attaque->addPersonnage($this); // ← indispensable pour le ManyToMany
+        }
         return $this;
     }
     public function removeAttaque(Attaque $attaque): static { $this->attaques->removeElement($attaque); return $this; }
@@ -199,6 +208,20 @@ class Personnage
         if ($this->campagnes->removeElement($campagne)) {
             $campagne->removePersonnage($this);
         }
+        return $this;
+    }
+
+    public function getVieActuelle(): ?int { return $this->vieActuelle; }
+    public function setVieActuelle(int $vieActuelle): static { $this->vieActuelle = $vieActuelle; return $this; }
+
+    public function getPortrait(): ?string
+    {
+        return $this->portrait;
+    }
+
+    public function setPortrait(?string $portrait): static
+    {
+        $this->portrait = $portrait;
         return $this;
     }
 }

@@ -49,6 +49,9 @@ abstract class Attaque
     #[ORM\ManyToMany(targetEntity: Pnj::class, mappedBy: 'attaques')]
     private Collection $pnjs;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $cout = null;
+
     public function __construct()
     {
         $this->personnages = new ArrayCollection();
@@ -74,4 +77,29 @@ abstract class Attaque
 
     public function getPersonnages(): Collection { return $this->personnages; }
     public function getPnjs(): Collection { return $this->pnjs; }
+
+    public function addPersonnage(Personnage $personnage): static
+    {
+        if (!$this->personnages->contains($personnage)) {
+            $this->personnages->add($personnage);
+        }
+        return $this;
+    }
+
+    public function getDiscriminatorType(): string
+    {
+        return 'physique'; // valeur par défaut
+    }
+
+    public function getCout(): ?int
+    {
+        return $this->cout;
+    }
+
+    public function setCout(?int $cout): static
+    {
+        $this->cout = $cout;
+
+        return $this;
+    }
 }

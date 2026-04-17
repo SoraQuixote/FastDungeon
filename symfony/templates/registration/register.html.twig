@@ -1,23 +1,37 @@
-{# templates/registration/register.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Inscription - FastDungeon{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/Login-register.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+<div class="auth-container">
+    <div class="auth-card">
+        <h1 class="medieval-title">Nouveau Personnage</h1>
 
-    {{ form_errors(registrationForm) }}
+        {{ form_start(registrationForm, {'attr': {'class': 'medieval-form'}}) }}
+            <div class="form-group">
+                {{ form_label(registrationForm.pseudo, "Pseudo de l'aventurier") }}
+                {{ form_widget(registrationForm.pseudo, {'attr': {'class': 'input-medieval'}}) }}
+            </div>
 
-    {{ form_start(registrationForm) }}
-        {# Supprime registrationForm.password si c'est le même que plainPassword #}
-        {{ form_row(registrationForm.pseudo) }} {# Assure-toi d'afficher l'email/username #}
-        
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+            <div class="form-group">
+                {{ form_label(registrationForm.plainPassword, "Mot de passe") }}
+                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'input-medieval'}}) }}
+            </div>
 
-        <button type="submit" class="btn btn-primary">Register</button>
-        <p class="mt-3">Already have an account? <a href="{{ path('app_login') }}">Log in here</a></p>
-    {{ form_end(registrationForm) }}
+            <div class="checkbox-container">
+                {{ form_widget(registrationForm.agreeTerms) }}
+                {{ form_label(registrationForm.agreeTerms, "Agree terms") }}
+            </div>
+
+            <div class="auth-actions">
+                <button type="submit" class="btn-medieval-submit">Créer le compte</button>
+                <p class="auth-link">Déjà membre ? <a href="{{ path('app_login') }}">Retourner au comptoir</a></p>
+            </div>
+        {{ form_end(registrationForm) }}
+    </div>
+</div>
 {% endblock %}

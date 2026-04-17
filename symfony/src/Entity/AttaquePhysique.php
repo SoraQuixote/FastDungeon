@@ -13,4 +13,9 @@ class AttaquePhysique extends Attaque
 
     public function getDegatDeContre(): ?int { return $this->degatDeContre; }
     public function setDegatDeContre(?int $degatDeContre): static { $this->degatDeContre = $degatDeContre; return $this; }
+
+    public function getDiscriminatorType(): string
+    {
+        return 'physique';
+    }
 }
