@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Campagnes{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }} {# Garde le CSS global du base.html.twig #}
+    <link rel="stylesheet" href="{{ asset('css/Campagne.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="campagne-container">
+    <header class="campagne-header">
+        <h1>Campagnes</h1> 
+        <a href="{{ path('app_campagne_new') }}" class="btn-medieval">Créer une campagne</a>
+    </header>
+
+    <div class="campagne-grid">
+        {# --- COLONNE GAUCHE : AUTRES AVENTURIERS --- #}
+        <section class="campagne-column">
+            <h2>Campagnes Publiques</h2>
+            <div class="cards-wrapper">
+                {% for campagne in campagnes %}
+                    {% if campagne.user != app.user %}
+                        <div class="campagne-card">
+                            <div class="card-content">
+                                <h3>{{ campagne.nom }}</h3>
+                                <p class="description">{{ campagne.textPresentation|slice(0, 100) }}...</p>
+                                <div class="card-footer">
+                                    <span class="etat-badge">{{ campagne.etat }}</span>
+                                    <a href="{{ path('app_campagne_show', {'id': campagne.id}) }}" class="btn-link">Explorer</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="empty-msg">Aucune quête disponible pour le moment.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        {# --- COLONNE DROITE : MES AVENTURES --- #}
+        <section class="campagne-column">
+            <h2>Mes Campagnes</h2>
+            <div class="cards-wrapper">
+                {% for campagne in campagnes %}
+                    {% if campagne.user == app.user %}
+                        <div class="campagne-card my-card">
+                            <div class="card-content">
+                                <h3>{{ campagne.nom }}</h3>
+                                <p class="description">{{ campagne.textPresentation|slice(0, 100) }}...</p>
+                                <div class="card-footer">
+                                    <span class="etat-badge">{{ campagne.etat }}</span>
+                                    <div class="actions">
+                                        <a href="{{ path('app_campagne_edit', {'id': campagne.id}) }}" class="btn-link edit">Approfondire</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="empty-msg">Vous n'avez pas encore créé d'histoire.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

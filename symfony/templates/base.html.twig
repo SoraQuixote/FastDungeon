@@ -19,10 +19,11 @@
 
         <nav class="navbar-medieval">
             <div class="nav-container">
-                <h1 class="logo">⚔️ Fast Dungeon</h1>
+                <h1 class="logo"> Fast Dungeon</h1>
                 
                 <div class="nav-links">
                     {% if app.user %}
+                        <a href="{{ path('app_campagne_index') }}" class="link-medieval">Campagnes</a>
                         <a href="{{ path('app_personnage_index') }}" class="link-medieval">Mes Personnages</a>
                         <span class="aventurier-name">Aventurier : <strong>{{ app.user.pseudo }}</strong></span>
                         <a href="{{ path('app_logout') }}" class="btn-quitter">Quitter la taverne</a>
@@ -31,7 +32,11 @@
             </div>
         </nav>
 
-        
+        {% if app.request.attributes.get('_route') != 'app_campagne_edit' %}
+            <nav class="main-site-nav">
+                {# Ton menu habituel avec Accueil, Personnages, etc. #}
+            </nav>
+        {% endif %}
 
         <main class="page-parchemin">
             {% block body %}{% endblock %}
