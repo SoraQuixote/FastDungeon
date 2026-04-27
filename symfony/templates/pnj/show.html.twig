@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pnj{% endblock %}
+
+{% block body %}
+    <h1>Pnj</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ pnj.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ pnj.nom }}</td>
+            </tr>
+            <tr>
+                <th>Prenom</th>
+                <td>{{ pnj.prenom }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ pnj.type }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ pnj.description }}</td>
+            </tr>
+            <tr>
+                <th>Histoire</th>
+                <td>{{ pnj.histoire }}</td>
+            </tr>
+            <tr>
+                <th>Inventaire</th>
+                <td>{{ pnj.inventaire }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_pnj_index') }}">back to list</a>
+
+    <a href="{{ path('app_pnj_edit', {'id': pnj.id}) }}">edit</a>
+
+    {{ include('pnj/_delete_form.html.twig') }}
+{% endblock %}
