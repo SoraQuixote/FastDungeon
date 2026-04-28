@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Campagne{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/campagne.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-medieval-form">
+    <section class="parchemin-scroll">
+        <header class="form-header">
+            <h1>Démarrer une nouvelle campagne</h1>
+            <p class="subtitle">Définissez les bases de votre prochaine aventure</p>
+        </header>
+
+        {{ form_start(form, {'attr': {'class': 'medieval-form'}}) }}
+            
+            <div class="form-group-inline">
+                <div class="field-width-70">
+                    {{ form_label(form.nom) }}
+                    {{ form_widget(form.nom) }}
+                    {{ form_errors(form.nom) }}
+                </div>
+                <div class="field-width-30">
+                    {{ form_label(form.etat) }}
+                    {{ form_widget(form.etat) }}
+                    {{ form_errors(form.etat) }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.textPresentation) }}
+                {{ form_widget(form.textPresentation) }}
+                <small>Ce texte sera visible par tous les aventuriers de la taverne.</small>
+                {{ form_errors(form.textPresentation) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.scenario) }}
+                {{ form_widget(form.scenario) }}
+                <small>Gardez vos secrets ici. Seul le maître du jeu peut lire ces lignes.</small>
+                {{ form_errors(form.scenario) }}
+            </div>
+
+            <div class="form-actions-bottom">
+                <a href="{{ path('app_campagne_index') }}" class="btn-secondary">Annuler</a>
+                <button type="submit" class="btn-medieval-submit">Créer la Campagne</button>
+            </div>
+        {{ form_end(form) }}
+    </section>
+</div>
+{% endblock %}

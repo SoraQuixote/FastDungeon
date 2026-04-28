@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Pnj{% endblock %}
+
+{% block body %}
+    <h1>Create new Pnj</h1>
+
+    {{ include('pnj/_form.html.twig') }}
+
+    <a href="{{ path('app_pnj_index') }}">back to list</a>
+{% endblock %}
