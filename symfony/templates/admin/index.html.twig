@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>🛡️ Tableau de Bord Admin</h1>
+
+    <h2>Liste des Utilisateurs</h2>
+    <ul>
+        {% for u in users %}
+            <li><strong>{{ u.pseudo }}</strong> (ID: {{ u.id }})</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Tous les Personnages Créés</h2>
+    <table>
+        <tr><th>Nom</th><th>Créateur</th></tr>
+        {% for p in personnages %}
+            <tr>
+                <td>{{ p.nom }}</td>
+                <td>{{ p.user.pseudo }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
