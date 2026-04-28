@@ -28,7 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Relation "posseder" inverse : un User peut avoir plusieurs Personnages (0,n)
      */
-    #[ORM\OneToMany(targetEntity: Personnage::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Personnage::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
     private Collection $personnages;
 
     /**

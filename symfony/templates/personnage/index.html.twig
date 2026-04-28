@@ -23,7 +23,9 @@
                             : asset('images/default-avatar.png') }}" 
                             alt="Portrait" class="perso-portrait">
                     </div>
-                    
+                    <p class="createur-nom">
+                        👤 Créateur : <strong>{{ personnage.user.pseudo|default('Inconnu') }}</strong>
+                    </p>
                     <div class="perso-info">
                         <h2 class="perso-nom">{{ personnage.prenom }} {{ personnage.nom }}</h2>
                         <p class="perso-stats">Niveau {{ personnage.niveau|default(1) }}</p>

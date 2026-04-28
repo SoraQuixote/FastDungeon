@@ -22,7 +22,13 @@
                 <h1 class="logo">⚔️ Fast Dungeon</h1>
                 
                 <div class="nav-links">
-                    {% if app.user %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a href="{{ path('app_personnage_index') }}" class="link-medieval">Les Personnages</a>
+                            <a class="link-medieval" href="{{ path('app_admin_users') }}">Gérer Utilisateurs</a>
+                            <a href="{{ path('app_logout') }}" class="btn-quitter">Quitter la taverne</a>
+                        </li>
+                    {% elseif app.user %}
                         <a href="{{ path('app_personnage_index') }}" class="link-medieval">Mes Personnages</a>
                         <span class="aventurier-name">Aventurier : <strong>{{ app.user.pseudo }}</strong></span>
                         <a href="{{ path('app_logout') }}" class="btn-quitter">Quitter la taverne</a>
