@@ -19,7 +19,7 @@
 
         <nav class="navbar-medieval">
             <div class="nav-container">
-                <h1 class="logo"> Fast Dungeon</h1>
+                <h1 class="logo">Fast Dungeon</h1>
                 
                 <div class="nav-links">
                     {% if app.user %}
@@ -33,7 +33,7 @@
         </nav>
 
         {% if app.request.attributes.get('_route') != 'app_campagne_edit' %}
-            <nav class="main-site-nav">
+            <nav class="main-site-nav"> 
                 {# Ton menu habituel avec Accueil, Personnages, etc. #}
             </nav>
         {% endif %}

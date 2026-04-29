@@ -321,3 +321,35 @@ small {
     background: rgba(139, 69, 19, 0.05);
     border-radius: 4px;
 }
+.portrait-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px; /* Force la hauteur même si vide */
+    width: 100%;
+    border: 2px dashed #8b4513;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.portrait-zone:hover {
+    background: rgba(139, 69, 19, 0.1);
+    border-color: #d2691e;
+}
+
+#mapPreview {
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.portrait-texte {
+    font-family: 'MedievalSharp', cursive; /* Ou ta police habituelle */
+    color: #8b4513;
+}
+
+.placeholder-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
