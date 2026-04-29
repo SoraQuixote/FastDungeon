@@ -1,148 +1,184 @@
-{# templates/personnage/edit.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/personnage-new.css') }}">
-    <link rel="stylesheet" href="style.css">
+{% block title %}Modifier {{ personnage.prenom }}{% endblock %}
 
-    <link rel="stylesheet" href="style.css?v=1">
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/fiche-personnage.css') }}">
 {% endblock %}
 
 {% block body %}
-    {# Formulaire principal de modification #}
-    <form method="post" enctype="multipart/form-data" action="{{ path('app_personnage_edit', {'id': personnage.id}) }}">
-        <input type="hidden" name="personnage[_token]" value="{{ csrf_token('personnage') }}">
 
-        {# ===== EN-TÊTE ===== #}
-        <div class="fiche-header">
-            <button type="submit" class="btn-medieval"> Sauvegarder</button>
-            <h2 class="fiche-titre">✦ Personnage : {{ personnage.prenom }} ✦</h2>
-            <div class="fiche-header-actions">
-                {# BOUTON SUPPRIMER #}
-                <button type="button" class="btn-medieval btn-danger" 
-                        onclick="if(confirm('Voulez-vous vraiment supprimer ce héros ?')) { document.getElementById('delete-form').submit(); }"
-                        style="background-color: #5a0000; color: white;">
-                    ✖ Supprimer le personnage
-                </button>
-                
-                <a href="{{ path('app_personnage_index') }}" class="btn-medieval btn-quitter">✖ Annuler</a>
-            </div>
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="personnage[_token]" value="{{ csrf_token('personnage') }}">
+
+    {# ===== EN-TÊTE ===== #}
+    <div class="fiche-header">
+        <div class="header-left">
+            <button type="submit" class="btn-medieval">Sauvegarder</button>
+            <button type="button" class="btn-medieval tab-btn active" onclick="switchTab('general')">📜 Général</button>
+            <button type="button" class="btn-medieval tab-btn" onclick="switchTab('equipement')">⚔ Équipement</button>
         </div>
+        
+        <h2 class="fiche-titre">✦ {{ personnage.prenom|default('Nouveau Héros') }} ✦</h2>
+        
+        <div class="fiche-header-actions">
+           {% if personnage.id %}
+                <button type="submit" form="delete-form" class="btn-medieval btn-supprimer">
+                    Supprimer le personnage
+                </button>
+            {% endif %}
+            <a href="{{ path('app_personnage_index') }}" class="btn-medieval btn-quitter">✖ Annuler</a>
+        </div>
+    </div>
 
-        {# ===== ZONE PRINCIPALE ===== #}
-        <div class="fiche-main">
+    <div class="fiche-container">
+        
+        {# --- ONGLET GÉNÉRAL --- #}
+        <div id="tab-general" class="tab-content active">
+            {# C'est ICI que fiche-main doit englober les 4 colonnes #}
+            <div class="fiche-main">
 
-            {# --- COLONNE 1 : Nom + Portrait --- #}
-            <div class="fiche-col-gauche">
-                <label for="personnage_nom">Nom du personnage</label>
-                <input type="text" id="personnage_nom" name="personnage[nom]" value="{{ personnage.nom }}" required>
+                {# --- COLONNE 1 : Nom + Portrait --- #}
+                <div class="fiche-col-gauche">
+                    <label for="personnage_nom">Nom du personnage</label>
+                    <input type="text" id="personnage_nom" name="personnage[nom]" value="{{ personnage.nom|default('') }}" required>
 
-                <label for="personnage_prenom">Prénom</label>
-                <input type="text" id="personnage_prenom" name="personnage[prenom]" value="{{ personnage.prenom }}">
+                    <label for="personnage_prenom">Prénom</label>
+                    <input type="text" id="personnage_prenom" name="personnage[prenom]" value="{{ personnage.prenom|default('') }}">
 
-                <label for="personnage_niveau">Niveau</label>
-                <input type="number" id="personnage_niveau" name="personnage[niveau]" value="{{ personnage.niveau|default(1) }}" min="1">
+                    <label for="personnage_niveau">Niveau</label>
+                    <input type="number" id="personnage_niveau" name="personnage[niveau]" value="{{ personnage.niveau|default(1) }}" min="1">
 
-                <div class="portrait-zone" onclick="document.getElementById('uploadPortrait').click()" title="Cliquez pour changer le portrait">
-                    <img id="portraitPreview" 
-                        src="{{ personnage.portrait ? asset('uploads/portraits/' ~ personnage.portrait) : '' }}" 
-                        alt="Portrait" 
-                        style="{{ personnage.portrait ? '' : 'display:none;' }}">
-                    
-                    <div id="portraitPlaceholder" style="{{ personnage.portrait ? 'display:none;' : '' }}">
-                        <span class="portrait-icone"></span>
-                        <span class="portrait-texte">Cliquez pour changer le portrait</span>
+                    <div class="portrait-zone" onclick="document.getElementById('uploadPortrait').click()" title="Cliquez pour ajouter un portrait">
+                        {% if personnage.portrait %}
+                            <img id="portraitPreview" src="{{ asset('uploads/portraits/' ~ personnage.portrait) }}" alt="Portrait">
+                        {% else %}
+                            <img id="portraitPreview" src="" alt="" style="display:none;">
+                            <div id="portraitPlaceholder">
+                                <span class="portrait-icone"></span>
+                                <span class="portrait-texte">Cliquez pour ajouter un portrait</span>
+                            </div>
+                        {% endif %}
+                        <input type="file" id="uploadPortrait" name="personnage[portrait]" accept="image/*" hidden>
                     </div>
-                    <input type="file" id="uploadPortrait" name="personnage[portrait]" accept="image/*" hidden>
-                </div>
-            </div>
-
-            {# --- COLONNE 2 : PV + Stats --- #}
-            <div class="fiche-col-centre">
-                <div class="pv-bloc">
-                    <span class="pv-label">Vie</span>
-                    <button type="button" class="btn-stat" onclick="changeVie(-1)">−</button>
-                    <span id="vieActuelle" class="pv-valeur">{{ personnage.vieActuelle|default(10) }}</span>
-                    <button type="button" class="btn-stat" onclick="changeVie(1)">+</button>
-                    <div class="vie-barre-container">
-                        <div class="vie-barre" id="lifeFill"></div>
-                    </div>
-                    <div class="pv-max-ligne">
-                        Max :
-                        <input type="number" id="vieMax" name="personnage[pointDeVie]" value="{{ personnage.pointDeVie|default(10) }}" min="1" onchange="updateVieBar()">
-                    </div>
-                    {# Ce champ est celui qui envoie la valeur au serveur #}
-                    <input type="hidden" id="vieActuelleInput" name="personnage[vieActuelle]" value="{{ personnage.vieActuelle|default(10) }}">
                 </div>
 
-                <hr class="fiche-separateur-stats">
-
-                {# Caractéristiques #}
-                {% set statsFields = {
-                    'stateForce': 'Force',
-                    'stateConstitution': 'Constitution',
-                    'stateRapidite': 'Rapidité',
-                    'stateIntelligence': 'Intelligence',
-                    'resistancePhysique': 'Rés. Physique',
-                    'resistanceMagique': 'Rés. Magique',
-                    'resistanceMentale': 'Rés. Mentale'
-                } %}
-
-                {% for key, label in statsFields %}
-                    <div class="stat-ligne">
-                        <span class="stat-nom">{{ label }}</span>
-                        <button type="button" class="btn-stat" onclick="changeStat('{{ key }}', -1)">−</button>
-                        <span class="stat-valeur" id="{{ key }}">{{ attribute(personnage, key)|default(0) }}</span>
-                        <button type="button" class="btn-stat" onclick="changeStat('{{ key }}', 1)">+</button>
-                        <input type="hidden" name="personnage[{{ key }}]" id="{{ key }}_input" value="{{ attribute(personnage, key)|default(0) }}">
+                {# --- COLONNE 2 : PV + Stats --- #}
+                <div class="fiche-col-centre">
+                    <div class="pv-bloc">
+                        <span class="pv-label">Vie</span>
+                        <button type="button" class="btn-stat" onclick="changeVie(-1)">−</button>
+                        <span id="vieActuelle" class="pv-valeur">{{ personnage.vieActuelle|default(10) }}</span>
+                        <button type="button" class="btn-stat" onclick="changeVie(1)">+</button>
+                        <div class="vie-barre-container">
+                            <div class="vie-barre" id="lifeFill"></div>
+                        </div>
+                        <div class="pv-max-ligne">
+                            Max :
+                            <input type="number" id="vieMax" name="personnage[pointDeVie]" value="{{ personnage.pointDeVie|default(10) }}" min="1" onchange="updateVieBar()">
+                        </div>
+                        <input type="hidden" id="vieActuelleInput" name="personnage[vieActuelle]" value="{{ personnage.vieActuelle|default(10) }}">
                     </div>
-                    {% if loop.index == 4 %}<hr class="fiche-separateur-stats">{% endif %}
-                {% endfor %}
-            </div>
 
-            {# --- COLONNE 3 : Capacités --- #}
-            <div class="fiche-col-attaques">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <hr class="fiche-separateur-stats">
+
+                    {# Stats auto-générées pour gagner de la place #}
+                    {% set stats = {
+                        'stateForce': 'Force',
+                        'stateConstitution': 'Constitution',
+                        'stateRapidite': 'Rapidité',
+                        'stateIntelligence': 'Intelligence',
+                        'resistancePhysique': 'Rés. Physique',
+                        'resistanceMagique': 'Rés. Magique',
+                        'resistanceMentale': 'Rés. Mentale'
+                    } %}
+
+                    {% for key, label in stats %}
+                        <div class="stat-ligne">
+                            <span class="stat-nom">{{ label }}</span>
+                            <button type="button" class="btn-stat" onclick="changeStat('{{ key }}', -1)">−</button>
+                            <span class="stat-valeur" id="{{ key }}">{{ attribute(personnage, key)|default(0) }}</span>
+                            <button type="button" class="btn-stat" onclick="changeStat('{{ key }}', 1)">+</button>
+                            <input type="hidden" name="personnage[{{ key }}]" id="{{ key }}_input" value="{{ attribute(personnage, key)|default(0) }}">
+                        </div>
+                        {% if loop.index == 4 %}<hr class="fiche-separateur-stats">{% endif %}
+                    {% endfor %}
+                </div>
+
+                {# --- COLONNE 3 : Capacités --- #}
+                <div class="fiche-col-attaques">
                     <h3>Capacités</h3>
                     <button type="button" class="btn-medieval" onclick="openAttaqueModal()">⚔ Créer une Capacité</button>
-                </div>
-                
-                <div class="cat-attaque-section">
-                    <h4>⚔ Physiques</h4>
-                    <div id="liste-physique" class="attaques-container">
-                        <p class="empty-msg">Chargement...</p>
+                    <div class="cat-attaque-section">
+                        <h4>⚔ Physiques</h4>
+                        <div id="liste-physique" class="attaques-container">
+                            <p class="empty-msg">Aucune attaque physique.</p>
+                        </div>
+                    </div>
+                    <div class="cat-attaque-section">
+                        <h4>✨ Magiques</h4>
+                        <div id="liste-magique" class="attaques-container">
+                            <p class="empty-msg">Aucun sort magique.</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="cat-attaque-section">
-                    <h4>✨ Magiques</h4>
-                    <div id="liste-magique" class="attaques-container">
-                        <p class="empty-msg">Chargement...</p>
-                    </div>
+                {# --- COLONNE 4 : Histoire --- #}
+                <div class="fiche-col-droite">
+                    <h3>Carnet de voyage</h3>
+                    <textarea name="personnage[carnetDeVoyage]" class="fiche-textarea">{{ personnage.carnetDeVoyage|default('') }}</textarea>
+                    <h3 style="margin-top: 15px;">Histoire</h3>
+                    <textarea name="personnage[histoire]" class="fiche-textarea">{{ personnage.histoire|default('') }}</textarea>
                 </div>
-            </div>
-
-            {# --- COLONNE 4 : Carnet + Histoire --- #}
-            <div class="fiche-col-droite">
-                <h3>Carnet de voyage</h3>
-                <textarea name="personnage[carnetDeVoyage]" class="fiche-textarea">{{ personnage.carnetDeVoyage }}</textarea>
-
-                <h3 style="margin-top: 15px;">Histoire</h3>
-                <textarea name="personnage[histoire]" class="fiche-textarea">{{ personnage.histoire }}</textarea>
             </div>
         </div>
 
-        {# ===== INVENTAIRE ===== #}
+        {# --- ONGLET ÉQUIPEMENT --- #}
+        <div id="tab-equipement" class="tab-content" style="display:none;">
+            <div class="equipement-grid">
+                <div class="equipement-card">
+                    <h3>🗡 Arme Équipée</h3>
+                    <div class="form-group">
+                        <label>Nom de l'arme</label>
+                        <input type="text" name="personnage[arme][nom]" value="{{ personnage.arme.nom|default('') }}">
+                        <label>Bonus Attaque</label>
+                        <input type="number" name="personnage[arme][ptsDegat]" value="{{ personnage.arme.ptsDegat|default(0) }}">
+                        <label>Description</label>
+                        <textarea name="personnage[arme][description]">{{ personnage.arme.description|default('') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="equipement-card">
+                    <h3>🛡 Armure Équipée</h3>
+                    <div class="form-group">
+                        <label>Nom de l'armure</label>
+                        <input type="text" name="personnage[armure][nom]" value="{{ personnage.armure.nom|default('') }}">
+                        <label>Bonus Défense</label>
+                        <input type="number" name="personnage[armure][bonus]" value="{{ personnage.armure.bonus|default(0) }}">
+                        <label>Description</label>
+                        <textarea name="personnage[armure][description]">{{ personnage.armure.description|default('') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="equipement-card full-width">
+                    <h3>🎒 Objets Spéciaux</h3>
+                    <div id="objets-list-container" class="grid-objets"></div>
+                    <button type="button" class="btn-medieval" onclick="openObjetModal()">+ Ajouter un objet</button>
+                </div>
+            </div>
+        </div>
+
+        {# --- INVENTAIRE --- #}
         <div class="inventaire-section">
-            <h3>Inventaire</h3>
-            <textarea name="personnage[inventaire]" class="fiche-textarea fiche-textarea-inventaire">{{ personnage.inventaire }}</textarea>
+            <h3>Inventaire Global</h3>
+            <textarea name="personnage[inventaire]" class="fiche-textarea fiche-textarea-inventaire">{{ personnage.inventaire|default('') }}</textarea>
         </div>
-    </form>
+    </div>
 
-    {# ===== MODALE (Placée à l'extérieur du formulaire) ===== #}
+    {# ===== MODALE DE CRÉATION / MODIFICATION D'ATTAQUE ===== #}
     <div id="modalAttaque" class="modal-medieval" style="display:none;">
         <div class="modal-content">
-            <h3 id="modalTitle">Nouvelle Capacité</h3>
+            <h3 id="modalTitle"> Nouvelle Capacité</h3>
             <input type="hidden" id="edit_index">
 
             <div class="form-row">
@@ -159,30 +195,42 @@
                 </div>
             </div>
 
+            <!-- CHAMPS GLOBAUX (Attaque) -->
             <div class="form-row">
                 <div>
-                    <label>Dégâts</label>
+                    <label>Dégâts (ptsDegat)</label>
                     <input type="number" id="atk_degat">
                 </div>
                 <div>
-                    <label>Coût</label>
+                    <label>Coût (cout)</label>
                     <input type="number" id="atk_cout_global">
                 </div>
             </div>
 
             <div class="form-row">
-                <div><label>Portée</label><input type="text" id="atk_portee"></div>
-                <div><label>Effet</label><input type="text" id="atk_effet"></div>
+                <div>
+                    <label>Portée</label>
+                    <input type="text" id="atk_portee">
+                </div>
+                <div>
+                    <label>Effet</label>
+                    <input type="text" id="atk_effet">
+                </div>
             </div>
 
+            <!-- SPÉCIFIQUE PHYSIQUE -->
             <div id="field_contre">
                 <label>Dégât de Contre</label>
                 <input type="number" id="atk_contre">
             </div>
 
+            <!-- SPÉCIFIQUE MAGIQUE -->
             <div id="field_magie" style="display:none;">
                 <div class="form-row">
-                    <div><label>ptsDeVie</label><input type="number" id="atk_magie_pv"></div>
+                    <div>
+                        <label>ptsDeVie</label>
+                        <input type="number" id="atk_magie_pv">
+                    </div>
                     <div>
                         <label>Type de Magie</label>
                         <select id="atk_magie_type">
@@ -199,46 +247,98 @@
             </div>
 
             <div class="modal-actions">
-                <button type="button" class="btn-medieval" onclick="sauvegarderAttaque()">Enregistrer</button>
+                <button type="button" class="btn-medieval" onclick="sauvegarderAttaque()">Enregistrer</button> 
+                <button type="submit" form="delete-form" class="btn-medieval btn-supprimer">
+                    Supprimer la capacité
+                </button>
                 <button type="button" class="btn-medieval btn-quitter" onclick="closeAttaqueModal()">Annuler</button>
             </div>
         </div>
     </div>
+    {# ===== MODALE OBJET ===== #}
+    <div id="modalObjet" class="modal-medieval" style="display:none;">
+        <div class="modal-content">
+            <h3 id="objModalTitle">Nouvel Objet</h3>
+            <input type="hidden" id="obj_edit_index">
 
-    {# Formulaire de suppression caché #}
-    <form id="delete-form" method="post" action="{{ path('app_personnage_delete', {'id': personnage.id}) }}" style="display:none;">
+            <div class="form-group">
+                <label>Nom de l'objet</label>
+                <input type="text" id="obj_nom">
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label>Dégâts (ptsDegat)</label>
+                    <input type="number" id="obj_degat" value="0">
+                </div>
+                <div>
+                    <label>Vie (ptsDeVie)</label>
+                    <input type="number" id="obj_vie" value="0">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Effet</label>
+                <input type="text" id="obj_effet" placeholder="Ex: +2 en Force">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="obj_desc" rows="3"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-medieval" onclick="sauvegarderObjet()">Enregistrer</button>
+                <button type="button" class="btn-medieval btn-quitter" onclick="closeObjetModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+</form>
+{# FORMULAIRE DE SUPPRESSION#}
+{% if personnage.id %}
+    <form id="delete-form" method="post" action="{{ path('app_personnage_delete', {'id': personnage.id}) }}" 
+          onsubmit="return confirm('Voulez-vous vraiment supprimer ce personnage ?');" 
+          style="display: none;">
         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ personnage.id) }}">
     </form>
+{% endif %}
 {% endblock %}
 
 {% block javascripts %}
-<script src="{{ asset('js/fiche-personnage.js') }}"></script>
-<script>
-    // On initialise le tableau vide
-    attaquesData = [];
-
-    {% if personnage.attaques is defined and personnage.attaques is not null %}
-        {% for atk in personnage.attaques %}
-            attaquesData.push({
+    <script src="{{ asset('js/fiche-personnage.js') }}"></script>
+    <script>
+        attaquesData = [
+            {% for atk in personnage.attaques %}
+            {
                 nom: "{{ atk.nom|e('js') }}",
                 type: "{{ atk.discriminatorType }}",
-                degat: {{ atk.ptsDegat ?? 0 }},
-                cout: {{ atk.cout ?? 0 }},
+                degat: {{ atk.ptsDegat|default(0) }},
+                cout: {{ atk.cout|default(0) }},
                 portee: "{{ atk.portee|e('js') }}",
-                effet: "{{ (atk.effet ?? '')|e('js') }}",
-                desc: "{{ (atk.description ?? '')|e('js') }}",
-                contre: {{ atk.discriminatorType == 'physique' ? (atk.degatDeContre ?? 0) : 0 }},
-                ptsDeVie: {{ atk.discriminatorType == 'magique' ? (atk.ptsDeVie ?? 0) : 0 }},
-                magieType: "{{ atk.discriminatorType == 'magique' ? atk.type|e('js') : '' }}"
-            });
-        {% endfor %}
-    {% endif %}
+                effet: "{{ atk.effet|e('js') }}",
+                desc: "{{ atk.description|e('js') }}",
+                contre: {{ (atk.discriminatorType == 'physique') ? atk.degatDeContre|default(0) : 0 }},
+                ptsDeVie: {{ (atk.discriminatorType == 'magique') ? atk.ptsDeVie|default(0) : 0 }},
+                magieType: "{{ (atk.discriminatorType == 'magique') ? atk.type|e('js') : '' }}"
+            },
+            {% endfor %}
+        ];
 
-    // On lance le rendu
-    document.addEventListener("DOMContentLoaded", function() {
-        if (typeof renderAttaques === "function") {
+        objetsData = [
+            {% for obj in personnage.objets %}
+            {
+                nom: "{{ obj.nom|e('js') }}",
+                degat: {{ obj.ptsDegat|default(0) }},
+                ptsDeVie: {{ obj.ptsDeVie|default(0) }},
+                effet: "{{ obj.effet|e('js') }}",
+                desc: "{{ obj.description|e('js') }}"
+            },
+            {% endfor %}
+        ];
+
+        document.addEventListener("DOMContentLoaded", function() {
             renderAttaques();
-        }
-    });
-</script>
+            renderObjets();
+        });
+    </script>
 {% endblock %}
