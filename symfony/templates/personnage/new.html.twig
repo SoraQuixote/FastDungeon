@@ -22,7 +22,6 @@
         <h2 class="fiche-titre">✦ {{ personnage.prenom|default('Nouveau Héros') }} ✦</h2>
         
         <div class="fiche-header-actions">
-            <button type="button" class="btn-medieval" onclick="openAttaqueModal()">⚔ Créer une Capacité</button>
             <a href="{{ path('app_personnage_index') }}" class="btn-medieval btn-quitter">✖ Annuler</a>
         </div>
     </div>
@@ -103,7 +102,7 @@
 
                 {# --- COLONNE 3 : Capacités --- #}
                 <div class="fiche-col-attaques">
-                    <h3>Capacités</h3>
+                    <h3>Capacités</h3> <button type="button" class="btn-medieval" onclick="openAttaqueModal()">⚔ Créer une Capacité</button>
                     <div class="cat-attaque-section">
                         <h4>⚔ Physiques</h4>
                         <div id="liste-physique" class="attaques-container">

@@ -122,10 +122,10 @@ class Personnage
     public function getId(): ?int { return $this->id; }
 
     public function getNom(): ?string { return $this->nom; }
-    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
+    public function setNom(?string $nom): static { $this->nom = $nom; return $this; }
 
     public function getPrenom(): ?string { return $this->prenom; }
-    public function setPrenom(string $prenom): static { $this->prenom = $prenom; return $this; }
+    public function setPrenom(?string $prenom): static { $this->prenom = $prenom; return $this; }
 
     public function getPersonnageUser(): ?string { return $this->personnageUser; }
     public function setPersonnageUser(?string $personnageUser): static { $this->personnageUser = $personnageUser; return $this; }
@@ -137,34 +137,37 @@ class Personnage
     public function setInventaire(?string $inventaire): static { $this->inventaire = $inventaire; return $this; }
 
     public function getPointDeVie(): ?int { return $this->pointDeVie; }
-    public function setPointDeVie(int $pointDeVie): static { $this->pointDeVie = $pointDeVie; return $this; }
+    public function setPointDeVie(?int $pointDeVie): static { $this->pointDeVie = $pointDeVie; return $this; }
+
+    public function getVieActuelle(): ?int { return $this->vieActuelle; }
+    public function setVieActuelle(?int $vieActuelle): static { $this->vieActuelle = $vieActuelle; return $this; }
 
     public function getHistoire(): ?string { return $this->histoire; }
     public function setHistoire(?string $histoire): static { $this->histoire = $histoire; return $this; }
 
     public function getNiveau(): ?int { return $this->niveau; }
-    public function setNiveau(int $niveau): static { $this->niveau = $niveau; return $this; }
+    public function setNiveau(?int $niveau): static { $this->niveau = $niveau; return $this; }
 
     public function getStateForce(): ?int { return $this->stateForce; }
-    public function setStateForce(int $stateForce): static { $this->stateForce = $stateForce; return $this; }
+    public function setStateForce(?int $stateForce): static { $this->stateForce = $stateForce; return $this; }
 
     public function getStateConstitution(): ?int { return $this->stateConstitution; }
-    public function setStateConstitution(int $stateConstitution): static { $this->stateConstitution = $stateConstitution; return $this; }
+    public function setStateConstitution(?int $stateConstitution): static { $this->stateConstitution = $stateConstitution; return $this; }
 
     public function getStateRapidite(): ?int { return $this->stateRapidite; }
-    public function setStateRapidite(int $stateRapidite): static { $this->stateRapidite = $stateRapidite; return $this; }
+    public function setStateRapidite(?int $stateRapidite): static { $this->stateRapidite = $stateRapidite; return $this; }
 
     public function getStateIntelligence(): ?int { return $this->stateIntelligence; }
-    public function setStateIntelligence(int $stateIntelligence): static { $this->stateIntelligence = $stateIntelligence; return $this; }
+    public function setStateIntelligence(?int $stateIntelligence): static { $this->stateIntelligence = $stateIntelligence; return $this; }
 
     public function getResistancePhysique(): ?int { return $this->resistancePhysique; }
-    public function setResistancePhysique(int $resistancePhysique): static { $this->resistancePhysique = $resistancePhysique; return $this; }
+    public function setResistancePhysique(?int $resistancePhysique): static { $this->resistancePhysique = $resistancePhysique; return $this; }
 
     public function getResistanceMagique(): ?int { return $this->resistanceMagique; }
-    public function setResistanceMagique(int $resistanceMagique): static { $this->resistanceMagique = $resistanceMagique; return $this; }
+    public function setResistanceMagique(?int $resistanceMagique): static { $this->resistanceMagique = $resistanceMagique; return $this; }
 
     public function getResistanceMentale(): ?int { return $this->resistanceMentale; }
-    public function setResistanceMentale(int $resistanceMentale): static { $this->resistanceMentale = $resistanceMentale; return $this; }
+    public function setResistanceMentale(?int $resistanceMentale): static { $this->resistanceMentale = $resistanceMentale; return $this; }
 
     public function getUser(): ?User { return $this->user; }
     public function setUser(?User $user): static { $this->user = $user; return $this; }
@@ -211,8 +214,7 @@ class Personnage
         return $this;
     }
 
-    public function getVieActuelle(): ?int { return $this->vieActuelle; }
-    public function setVieActuelle(int $vieActuelle): static { $this->vieActuelle = $vieActuelle; return $this; }
+   
 
     public function getPortrait(): ?string
     {

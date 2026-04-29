@@ -849,3 +849,14 @@ input, textarea, select {
     background-color: #ffd700 !important; /* Or pour l'onglet actif */
     color: #000 !important;
 }
+.btn-supprimer {
+    background-color: #8b0000; /* Rouge sombre médiéval */
+    color: white;
+    border: 1px solid #5a0000;
+    margin-right: 10px;
+}
+
+.btn-supprimer:hover {
+    background-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}

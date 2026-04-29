@@ -22,7 +22,11 @@
         <h2 class="fiche-titre">✦ {{ personnage.prenom|default('Nouveau Héros') }} ✦</h2>
         
         <div class="fiche-header-actions">
-            <button type="button" class="btn-medieval" onclick="openAttaqueModal()">⚔ Créer une Capacité</button>
+           {% if personnage.id %}
+                <button type="submit" form="delete-form" class="btn-medieval btn-supprimer">
+                    Supprimer le personnage
+                </button>
+            {% endif %}
             <a href="{{ path('app_personnage_index') }}" class="btn-medieval btn-quitter">✖ Annuler</a>
         </div>
     </div>
@@ -104,6 +108,7 @@
                 {# --- COLONNE 3 : Capacités --- #}
                 <div class="fiche-col-attaques">
                     <h3>Capacités</h3>
+                    <button type="button" class="btn-medieval" onclick="openAttaqueModal()">⚔ Créer une Capacité</button>
                     <div class="cat-attaque-section">
                         <h4>⚔ Physiques</h4>
                         <div id="liste-physique" class="attaques-container">
@@ -242,7 +247,10 @@
             </div>
 
             <div class="modal-actions">
-                <button type="button" class="btn-medieval" onclick="sauvegarderAttaque()">Enregistrer</button>
+                <button type="button" class="btn-medieval" onclick="sauvegarderAttaque()">Enregistrer</button> 
+                <button type="submit" form="delete-form" class="btn-medieval btn-supprimer">
+                    Supprimer la capacité
+                </button>
                 <button type="button" class="btn-medieval btn-quitter" onclick="closeAttaqueModal()">Annuler</button>
             </div>
         </div>
@@ -286,7 +294,14 @@
         </div>
     </div>
 </form>
-
+{# FORMULAIRE DE SUPPRESSION#}
+{% if personnage.id %}
+    <form id="delete-form" method="post" action="{{ path('app_personnage_delete', {'id': personnage.id}) }}" 
+          onsubmit="return confirm('Voulez-vous vraiment supprimer ce personnage ?');" 
+          style="display: none;">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ personnage.id) }}">
+    </form>
+{% endif %}
 {% endblock %}
 
 {% block javascripts %}

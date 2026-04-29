@@ -162,4 +162,17 @@ final class PersonnageController extends AbstractController
             'form' => $form,
         ]);
     }
+    #[Route('/{id}/delete', name: 'app_personnage_delete', methods: ['POST'])]
+    public function delete(Request $request, Personnage $personnage, EntityManagerInterface $entityManager): Response
+    {
+        // On vérifie le token de sécurité qu'on a mis dans le Twig
+        if ($this->isCsrfTokenValid('delete'.$personnage->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($personnage); // On dit à Doctrine de supprimer l'objet
+            $entityManager->flush();             // On exécute la requête SQL DELETE
+            
+            $this->addFlash('success', 'Le personnage a disparu dans les abysses.');
+        }
+
+        return $this->redirectToRoute('app_personnage_index');
+    }
 }
