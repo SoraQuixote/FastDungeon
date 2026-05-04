@@ -1,0 +1,147 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un PNJ{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/fiche-personnage.css') }}">
+{% endblock %}
+
+{% block body %}
+<form method="post" enctype="multipart/form-data">
+    {# On suppose que vous passez un CSRF token nommé 'pnj' depuis le contrôleur #}
+    <input type="hidden" name="pnj[_token]" value="{{ csrf_token('pnj') }}">
+
+    {# ===== EN-TÊTE ===== #}
+    <div class="fiche-header">
+        <div class="header-left">
+            <button type="submit" class="btn-medieval">Sauvegarder le PNJ</button>
+            <button type="button" class="btn-medieval tab-btn active" onclick="switchTab('general')">📜 Identité</button>
+            <button type="button" class="btn-medieval tab-btn" onclick="switchTab('equipement')">⚔ Équipement</button>
+        </div>
+        
+        <h2 class="fiche-titre">✦ {{ pnj.nom|default('Nouveau Figurant') }} ✦</h2>
+        
+        <div class="fiche-header-actions">
+            {# Retour à la gestion de la campagne #}
+            <a href="{{ path('app_campagne_show', {'id': campagne.id}) }}" class="btn-medieval btn-quitter">✖ Annuler</a>
+        </div>
+    </div>
+
+    <div class="fiche-container">
+        
+        {# --- ONGLET GÉNÉRAL (Identité & Histoire) --- #}
+        <div id="tab-general" class="tab-content active">
+            <div class="fiche-main">
+
+                {# --- COLONNE 1 : Nom & Portrait --- #}
+                <div class="fiche-col-gauche">
+                    <label for="pnj_nom">Nom du PNJ</label>
+                    <input type="text" id="pnj_nom" name="pnj[nom]" value="{{ pnj.nom|default('') }}" required>
+
+                    <label for="pnj_prenom">Prénom</label>
+                    <input type="text" id="pnj_prenom" name="pnj[prenom]" value="{{ pnj.prenom|default('') }}">
+
+                    <label for="pnj_type">Type / Rôle (ex: Marchand, Garde)</label>
+                    <input type="text" id="pnj_type" name="pnj[type]" value="{{ pnj.type|default('') }}">
+
+                    <div class="portrait-zone" onclick="document.getElementById('uploadPortrait').click()" title="Cliquez pour ajouter un portrait">
+                        {% if pnj.portrait|default(null) %}
+                            <img id="portraitPreview" src="{{ asset('uploads/portraits/' ~ pnj.portrait) }}" alt="Portrait">
+                        {% else %}
+                            <img id="portraitPreview" src="" alt="" style="display:none;">
+                            <div id="portraitPlaceholder">
+                                <span class="portrait-icone">👤</span>
+                                <span class="portrait-texte">Portrait du PNJ</span>
+                            </div>
+                        {% endif %}
+                        <input type="file" id="uploadPortrait" name="pnj[portrait]" accept="image/*" hidden>
+                    </div>
+                </div>
+
+                {# --- COLONNE 2 : Description & Histoire --- #}
+                {# Le PNJ n'ayant pas de stats selon le MCD, on utilise l'espace pour les textes #}
+                <div class="fiche-col-droite" style="flex: 2;">
+                    <h3>Histoire & Rôle</h3>
+                    <textarea name="pnj[description]" class="fiche-textarea" style="height: 150px;" placeholder="Qui est ce PNJ dans l'intrigue ?">{{ pnj.description|default('') }}</textarea>
+                    
+                    <h3 style="margin-top: 15px;">Notes MJ (Secret)</h3>
+                    <textarea name="pnj[histoire]" class="fiche-textarea" style="height: 150px;" placeholder="Détails cachés aux joueurs...">{{ pnj.histoire|default('') }}</textarea>
+                </div>
+
+                {# --- COLONNE 3 : Capacités (Attaques) --- #}
+                <div class="fiche-col-attaques">
+                    <h3>Capacités du PNJ</h3> 
+                    <button type="button" class="btn-medieval" onclick="openAttaqueModal()">⚔ Ajouter Capacité</button>
+                    
+                    <div class="cat-attaque-section">
+                        <h4>⚔ Actions de combat</h4>
+                        <div id="liste-attaques-pnj" class="attaques-container">
+                            <p class="empty-msg">Aucune capacité définie.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# --- ONGLET ÉQUIPEMENT --- #}
+        <div id="tab-equipement" class="tab-content" style="display:none;">
+            <div class="equipement-grid">
+                <div class="equipement-card">
+                    <h3>🗡 Arme</h3>
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" name="pnj[arme][nom]" value="{{ pnj.arme.nom|default('') }}">
+                        <label>Dégâts</label>
+                        <input type="number" name="pnj[arme][ptsDegat]" value="{{ pnj.arme.ptsDegat|default(0) }}">
+                        <label>Description</label>
+                        <textarea name="pnj[arme][description]">{{ pnj.arme.description|default('') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="equipement-card">
+                    <h3>🛡 Armure</h3>
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" name="pnj[armure][nom]" value="{{ pnj.armure.nom|default('') }}">
+                        <label>Bonus Défense</label>
+                        <input type="number" name="pnj[armure][bonus]" value="{{ pnj.armure.bonus|default(0) }}">
+                        <label>Description</label>
+                        <textarea name="pnj[armure][description]">{{ pnj.armure.description|default('') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="equipement-card full-width">
+                    <h3>🎒 Butin / Objets portés</h3>
+                    <div id="objets-list-container" class="grid-objets"></div>
+                    <button type="button" class="btn-medieval" onclick="openObjetModal()">+ Ajouter un objet</button>
+                </div>
+            </div>
+        </div>
+
+        {# --- INVENTAIRE GLOBAL --- #}
+        <div class="inventaire-section">
+            <h3>Inventaire de poche</h3>
+            <textarea name="pnj[inventaire]" class="fiche-textarea fiche-textarea-inventaire" placeholder="Liste d'objets divers...">{{ pnj.inventaire|default('') }}</textarea>
+        </div>
+    </div>
+
+    {# Réutilisation de vos modales (Attaque et Objet) #}
+    {% include 'personnage/_modales.html.twig' ignore missing %}
+    {# Note : Il est préférable de mettre les modales dans un petit fichier séparé pour ne pas dupliquer le code #}
+</form>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/fiche-personnage.js') }}"></script>
+    <script>
+        // Petite fonction pour gérer les onglets spécifique à cette page si non incluse dans le JS global
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).style.display = 'block';
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+{% endblock %}
