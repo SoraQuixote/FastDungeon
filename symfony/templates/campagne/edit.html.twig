@@ -2,6 +2,11 @@
 
 {% block title %}Mode MJ : {{ campagne.nom }}{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }} {# Garde le CSS global du base.html.twig #}
+    <link rel="stylesheet" href="{{ asset('css/Campagne.css') }}">
+{% endblock %}
+
 {% block body %}
     <div class="mj-dashboard-container"> {# Nouveau conteneur de centrage #}
         
@@ -70,7 +75,7 @@
                 <section class="parchemin-scroll">
                     <div class="header-with-btn">
                         <h1>Les Figurants de l'Histoire</h1>
-                        <a href="{{ path('app_pnj_new', {'campagne': campagne.id}) }}" class="btn-medieval">Recruter un PNJ</a>
+                        <a href="{{ path('app_pnj_new', {'campagne': campagne.id}) }}" class="btn-medieval">Créer un PNJ</a>
                     </div>
                     <div class="pnj-grid">
                         {% for pnj in campagne.pnjs %}

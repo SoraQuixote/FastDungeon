@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Pnj;
+use App\Entity\Campagne; // <--- NE PAS OUBLIER CET IMPORT
 use App\Form\PnjType;
 use App\Repository\PnjRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,46 +27,44 @@ final class PnjController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $pnj = new Pnj();
+        $campagne = null;
 
         // --- LOGIQUE DE LIAISON ---
-        // On regarde si "campagne" est présent dans l'URL (ex: /pnj/new?campagne=5)
         $campagneId = $request->query->get('campagne');
         
         if ($campagneId) {
             $campagne = $entityManager->getRepository(Campagne::class)->find($campagneId);
             if ($campagne) {
-                // On ajoute la campagne au PNJ (relation ManyToMany)
+                // Liaison selon votre MCD (comprendre / pnj_campagne)
                 $pnj->addCampagne($campagne);
             }
         }
-        // --------------------------
 
+        // On utilise ici le formulaire, mais dans votre Twig vous avez fait du HTML manuel.
+        // Pour que les modales et les champs fonctionnent comme pour Personnage, 
+        // assurez-vous que PnjType ne bloque pas les champs supplémentaires.
         $form = $this->createForm(PnjType::class, $pnj);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Gestion de l'upload d'image si nécessaire ici
+            
             $entityManager->persist($pnj);
             $entityManager->flush();
 
-            // Une fois créé, on redirige vers l'édition de la campagne, onglet PNJ
             if ($campagneId) {
+                // Redirection vers l'édition de la campagne (onglet PNJ)
                 return $this->redirectToRoute('app_campagne_edit', ['id' => $campagneId]);
             }
 
             return $this->redirectToRoute('app_pnj_index');
         }
 
-        return $this->render('pnj/new.html.twig', [
+        // IMPORTANT : On passe 'campagne' et 'pnj' au template
+        return $this->render('campagne/newpnj.html.twig', [
             'pnj' => $pnj,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_pnj_show', methods: ['GET'])]
-    public function show(Pnj $pnj): Response
-    {
-        return $this->render('pnj/show.html.twig', [
-            'pnj' => $pnj,
+            'campagne' => $campagne,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -75,17 +74,28 @@ final class PnjController extends AbstractController
         $form = $this->createForm(PnjType::class, $pnj);
         $form->handleRequest($request);
 
+        // On récupère la campagne liée pour le bouton "Annuler" du template
+        $campagne = $pnj->getCampagnes()->first(); 
+
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_pnj_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_campagne_edit', ['id' => $campagne->getId()]);
         }
 
-        return $this->render('pnj/edit.html.twig', [
+        return $this->render('campagne/newpnj.html.twig', [
             'pnj' => $pnj,
-            'form' => $form,
+            'campagne' => $campagne,
+            'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/{id}', name: 'app_pnj_show', methods: ['GET'])]
+    public function show(Pnj $pnj): Response
+    {
+        return $this->render('pnj/show.html.twig', [
+            'pnj' => $pnj,
+        ]);
+    }        
 
     #[Route('/{id}', name: 'app_pnj_delete', methods: ['POST'])]
     public function delete(Request $request, Pnj $pnj, EntityManagerInterface $entityManager): Response
