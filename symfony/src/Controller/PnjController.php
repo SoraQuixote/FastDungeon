@@ -95,7 +95,7 @@ final class PnjController extends AbstractController
         return $this->render('pnj/show.html.twig', [
             'pnj' => $pnj,
         ]);
-    }
+    }        
 
     #[Route('/{id}', name: 'app_pnj_delete', methods: ['POST'])]
     public function delete(Request $request, Pnj $pnj, EntityManagerInterface $entityManager): Response
