@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Pnj;
-use App\Entity\Campagne; // <--- NE PAS OUBLIER CET IMPORT
+use App\Entity\Campagne;
 use App\Form\PnjType;
 use App\Repository\PnjRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,9 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+// Toutes les routes commencent par /pnj
 #[Route('/pnj')]
 final class PnjController extends AbstractController
 {
+    // Affiche la liste de tous les PNJ
     #[Route(name: 'app_pnj_index', methods: ['GET'])]
     public function index(PnjRepository $pnjRepository): Response
     {
@@ -23,44 +25,40 @@ final class PnjController extends AbstractController
         ]);
     }
 
+    // Affiche et traite le formulaire de création d'un PNJ
+    // Peut recevoir un paramètre ?campagne=X pour lier le PNJ directement à une campagne
     #[Route('/new', name: 'app_pnj_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $pnj = new Pnj();
         $campagne = null;
 
-        // --- LOGIQUE DE LIAISON ---
+        // Récupère l'ID de la campagne depuis l'URL si présent
         $campagneId = $request->query->get('campagne');
         
         if ($campagneId) {
             $campagne = $entityManager->getRepository(Campagne::class)->find($campagneId);
             if ($campagne) {
-                // Liaison selon votre MCD (comprendre / pnj_campagne)
+                // Lie directement le PNJ à la campagne trouvée
                 $pnj->addCampagne($campagne);
             }
         }
 
-        // On utilise ici le formulaire, mais dans votre Twig vous avez fait du HTML manuel.
-        // Pour que les modales et les champs fonctionnent comme pour Personnage, 
-        // assurez-vous que PnjType ne bloque pas les champs supplémentaires.
         $form = $this->createForm(PnjType::class, $pnj);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion de l'upload d'image si nécessaire ici
-            
             $entityManager->persist($pnj);
             $entityManager->flush();
 
+            // Redirige vers la campagne d'origine si le PNJ lui est lié
             if ($campagneId) {
-                // Redirection vers l'édition de la campagne (onglet PNJ)
                 return $this->redirectToRoute('app_campagne_edit', ['id' => $campagneId]);
             }
 
             return $this->redirectToRoute('app_pnj_index');
         }
 
-        // IMPORTANT : On passe 'campagne' et 'pnj' au template
         return $this->render('campagne/newpnj.html.twig', [
             'pnj' => $pnj,
             'campagne' => $campagne,
@@ -68,13 +66,14 @@ final class PnjController extends AbstractController
         ]);
     }
 
+    // Affiche et traite le formulaire de modification d'un PNJ existant
     #[Route('/{id}/edit', name: 'app_pnj_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Pnj $pnj, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(PnjType::class, $pnj);
         $form->handleRequest($request);
 
-        // On récupère la campagne liée pour le bouton "Annuler" du template
+        // Récupère la première campagne liée pour pouvoir rediriger vers elle
         $campagne = $pnj->getCampagnes()->first(); 
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -89,6 +88,7 @@ final class PnjController extends AbstractController
         ]);
     }
 
+    // Affiche le détail d'un PNJ
     #[Route('/{id}', name: 'app_pnj_show', methods: ['GET'])]
     public function show(Pnj $pnj): Response
     {
@@ -97,6 +97,7 @@ final class PnjController extends AbstractController
         ]);
     }        
 
+    // Supprime un PNJ après vérification du token CSRF
     #[Route('/{id}', name: 'app_pnj_delete', methods: ['POST'])]
     public function delete(Request $request, Pnj $pnj, EntityManagerInterface $entityManager): Response
     {

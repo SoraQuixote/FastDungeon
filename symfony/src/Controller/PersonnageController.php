@@ -13,39 +13,47 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
+// Toutes les routes commencent par /personnage
 #[Route('/personnage')]
 final class PersonnageController extends AbstractController
 {
+    // Affiche la liste des personnages
+    // Les admins voient tous les personnages, les autres voient seulement les leurs
     #[Route(name: 'app_personnage_index', methods: ['GET'])]
     public function index(PersonnageRepository $personnageRepository): Response
     {   
         if ($this->isGranted('ROLE_ADMIN')) {
             $personnages = $personnageRepository->findAll();
         } else {
+            // Filtre par utilisateur connecté
             $personnages = $personnageRepository->findBy(['user' => $this->getUser()]);
         }
 
         return $this->render('personnage/index.html.twig', [
             'personnages' => $personnages,
         ]);
-
     }
 
+    // Affiche et traite le formulaire de création d'un personnage
     #[Route('/new', name: 'app_personnage_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $personnage = new Personnage();
+        // Associe directement le personnage à l'utilisateur connecté
         $personnage->setUser($this->getUser());
         $form = $this->createForm(PersonnageType::class, $personnage);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Récupère le fichier image envoyé depuis le formulaire
             /** @var UploadedFile $portraitFile */
             $portraitFile = $form->get('portrait')->getData();
 
             if ($portraitFile) {
+                // Génère un nom de fichier unique pour éviter les doublons
                 $newFilename = uniqid().'.'.$portraitFile->guessExtension();
                 try {
+                    // Déplace le fichier vers le dossier de portraits configuré
                     $portraitFile->move(
                         $this->getParameter('portraits_directory'),
                         $newFilename
@@ -68,6 +76,7 @@ final class PersonnageController extends AbstractController
         ]);
     }
 
+    // Affiche le détail d'un personnage
     #[Route('/{id}', name: 'app_personnage_show', methods: ['GET'])]
     public function show(Personnage $personnage): Response
     {
@@ -76,6 +85,7 @@ final class PersonnageController extends AbstractController
         ]);
     }
 
+    // Traite la modification complète d'un personnage (stats, attaques, objets, équipement, portrait)
     #[Route('/{id}/edit', name: 'app_personnage_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Personnage $personnage, EntityManagerInterface $entityManager): Response
     {
@@ -83,16 +93,19 @@ final class PersonnageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Récupère les données brutes du formulaire pour les sous-entités (attaques, objets, etc.)
             $dataPersonnage = $request->request->all('personnage');
 
             // --- 1. SAUVEGARDE DES ATTAQUES ---
             $attaquesData = $dataPersonnage['attaques'] ?? [];
+            // Supprime toutes les anciennes attaques avant de les recréer
             foreach ($personnage->getAttaques() as $oldAtk) {
                 $entityManager->remove($oldAtk);
             }
             foreach ($attaquesData as $data) {
                 if (empty($data['nom'])) continue;
                 $type = strtolower(trim($data['type'] ?? ''));
+                // Crée une AttaqueMagique ou AttaquePhysique selon le type
                 if ($type === 'magique') {
                     $atk = new \App\Entity\AttaqueMagique();
                     $atk->setPtsDeVie((int)($data['ptsDeVie'] ?? 0));
@@ -101,14 +114,16 @@ final class PersonnageController extends AbstractController
                     $atk = new \App\Entity\AttaquePhysique();
                     $atk->setDegatDeContre((int)($data['contre'] ?? 0));
                 }
+                // Remplit les champs communs à toutes les attaques
                 $atk->setNom($data['nom'])->setPortee($data['portee'] ?? 'Contact')->setEffet($data['effet'] ?? '')
                     ->setDescription($data['desc'] ?? '')->setPtsDegat((int)($data['degat'] ?? 0))->setCout((int)($data['cout'] ?? 0));
                 $personnage->addAttaque($atk);
                 $entityManager->persist($atk);
             }
 
-            // --- 2. SAUVEGARDE DES OBJETS (MANQUANT DANS TON CODE) ---
+            // --- 2. SAUVEGARDE DES OBJETS ---
             $objetsData = $dataPersonnage['objets'] ?? [];
+            // Supprime tous les anciens objets avant de les recréer
             foreach ($personnage->getObjets() as $oldObj) {
                 $entityManager->remove($oldObj);
             }
@@ -125,16 +140,17 @@ final class PersonnageController extends AbstractController
             }
 
             // --- 3. ARME ET ARMURE ---
+            // Met à jour l'arme existante ou en crée une nouvelle si absente
             if (isset($dataPersonnage['arme'])) {
                 $arme = $personnage->getArme() ?? new \App\Entity\Arme();
                 $arme->setNom($dataPersonnage['arme']['nom'] ?? '')
-                    // Utilisation de setBonus car c'est le nom dans ton MCD pour l'Arme
                     ->setBonus((int)($dataPersonnage['arme']['bonus'] ?? 0)) 
                     ->setDescription($dataPersonnage['arme']['description'] ?? '');
                 $personnage->setArme($arme);
                 $entityManager->persist($arme);
             }
 
+            // Met à jour l'armure existante ou en crée une nouvelle si absente
             if (isset($dataPersonnage['armure'])) {
                 $armure = $personnage->getArmure() ?? new \App\Entity\Armure();
                 $armure->setNom($dataPersonnage['armure']['nom'] ?? '')
@@ -145,6 +161,7 @@ final class PersonnageController extends AbstractController
             }
 
             // --- 4. PORTRAIT ---
+            // Remplace le portrait uniquement si un nouveau fichier est envoyé
             /** @var UploadedFile $portraitFile */
             $portraitFile = $form->get('portrait')->getData();
             if ($portraitFile) {
@@ -162,13 +179,15 @@ final class PersonnageController extends AbstractController
             'form' => $form,
         ]);
     }
+
+    // Supprime un personnage après vérification du token CSRF
     #[Route('/{id}/delete', name: 'app_personnage_delete', methods: ['POST'])]
     public function delete(Request $request, Personnage $personnage, EntityManagerInterface $entityManager): Response
     {
-        // On vérifie le token de sécurité qu'on a mis dans le Twig
+        // Vérifie que la requête vient bien du formulaire de suppression (sécurité anti-CSRF)
         if ($this->isCsrfTokenValid('delete'.$personnage->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($personnage); // On dit à Doctrine de supprimer l'objet
-            $entityManager->flush();             // On exécute la requête SQL DELETE
+            $entityManager->remove($personnage);
+            $entityManager->flush();
             
             $this->addFlash('success', 'Le personnage a disparu dans les abysses.');
         }

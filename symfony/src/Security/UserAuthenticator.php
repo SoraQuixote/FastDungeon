@@ -16,45 +16,54 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
+// Gère l'authentification par formulaire (pseudo + mot de passe)
 class UserAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
 
+    // Nom de la route vers laquelle rediriger si l'utilisateur n'est pas connecté
     public const LOGIN_ROUTE = 'app_login';
 
     public function __construct(private UrlGeneratorInterface $urlGenerator)
     {
     }
 
-        public function authenticate(Request $request): Passport
+    // Lit les données du formulaire de connexion et construit le passeport d'authentification
+    public function authenticate(Request $request): Passport
     {
-        // On récupère le pseudo (souvent nommé _username ou pseudo dans le formulaire)
-        // Vérifie le nom de ton champ dans login.html.twig
+        // Récupère le pseudo et le mot de passe envoyés par le formulaire
         $pseudo = $request->getPayload()->getString('pseudo'); 
         $password = $request->getPayload()->getString('password');
 
+        // Mémorise le pseudo dans la session pour le pré-remplir en cas d'erreur
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $pseudo);
 
         return new Passport(
-            new UserBadge($pseudo), // C'est le pseudo qui identifie l'utilisateur
+            // Identifie l'utilisateur par son pseudo
+            new UserBadge($pseudo),
             new PasswordCredentials($password),
             [
+                // Vérifie le token CSRF pour se protéger des attaques cross-site
                 new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+                // Active la fonctionnalité "se souvenir de moi"
                 new RememberMeBadge(),
             ]
         );
     }
 
+    // Redirige l'utilisateur après une connexion réussie
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        // Si l'utilisateur essayait d'accéder à une page protégée, on l'y redirige
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
-        // On utilise le NOM de la route : app_personnage_index
+        // Sinon, redirige vers la liste des personnages par défaut
         return new RedirectResponse($this->urlGenerator->generate('app_personnage_index'));
     }
 
+    // Retourne l'URL de la page de connexion (utilisée par Symfony en cas d'accès refusé)
     protected function getLoginUrl(Request $request): string
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
