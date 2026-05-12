@@ -15,34 +15,37 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class RegistrationController extends AbstractController
 {
-    
+    // Gère l'inscription d'un nouvel utilisateur
     #[Route('/register', name: 'app_register')]
     public function register(
         Request $request, 
         UserPasswordHasherInterface $userPasswordHasher, 
         Security $security, 
         EntityManagerInterface $entityManager,
-        \App\Repository\RoleRepository $roleRepository // Ajoute le Repository
+        \App\Repository\RoleRepository $roleRepository
         ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Récupère le mot de passe en clair depuis le formulaire
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
+            // Hache le mot de passe avant de le stocker (ne jamais stocker en clair)
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+
+            // Attribue automatiquement le rôle ROLE_USER à tout nouvel inscrit
             $defaultRole = $roleRepository->findOneBy(['libelle' => 'ROLE_USER']);
             if ($defaultRole) {
                 $user->addRoleEntity($defaultRole);
             }
+
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
-
+            // Connecte l'utilisateur automatiquement après son inscription
             return $security->login($user, UserAuthenticator::class, 'main');
         }
 
