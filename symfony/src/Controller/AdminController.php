@@ -12,8 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-// Toutes les routes de ce contrôleur commencent par /admin
-// et sont accessibles uniquement aux utilisateurs ayant le rôle ROLE_ADMIN
+// Toutes les route de ce contrôleur commencent par /admin
+// et sont accessibles uniquement aux utilisateur ayant le rôle ROLE_ADMIN
 #[Route('/admin')]
 #[IsGranted('ROLE_ADMIN')]
 final class AdminController extends AbstractController
