@@ -138,8 +138,21 @@ final class PersonnageController extends AbstractController
                 $personnage->addObjet($obj);
                 $entityManager->persist($obj);
             }
+            // --- 3. SAUVEGARDE DES STATS ---
+            $statsData = $dataPersonnage['stats'] ?? [];
+            foreach ($personnage->getStats() as $oldStat) {
+                $entityManager->remove($oldStat);
+            }
+            foreach ($statsData as $sData) {
+                if (empty($sData['nom'])) continue;
+                $stat = new \App\Entity\Stat();
+                $stat->setNom($sData['nom'])
+                    ->setValeur((int)($sData['valeur'] ?? 0));
+                $personnage->addStat($stat);
+                $entityManager->persist($stat);
+            }
 
-            // --- 3. ARME ET ARMURE ---
+            // --- 4. ARME ET ARMURE ---
             // Met à jour l'arme existante ou en crée une nouvelle si absente
             if (isset($dataPersonnage['arme'])) {
                 $arme = $personnage->getArme() ?? new \App\Entity\Arme();
@@ -160,7 +173,7 @@ final class PersonnageController extends AbstractController
                 $entityManager->persist($armure);
             }
 
-            // --- 4. PORTRAIT ---
+            // --- 5. PORTRAIT ---
             // Remplace le portrait uniquement si un nouveau fichier est envoyé
             /** @var UploadedFile $portraitFile */
             $portraitFile = $form->get('portrait')->getData();

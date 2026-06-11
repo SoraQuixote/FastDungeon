@@ -39,27 +39,6 @@ class Personnage
     #[ORM\Column]
     private ?int $niveau = null;
 
-    #[ORM\Column]
-    private ?int $stateForce = null;
-
-    #[ORM\Column]
-    private ?int $stateConstitution = null;
-
-    #[ORM\Column]
-    private ?int $stateRapidite = null;
-
-    #[ORM\Column]
-    private ?int $stateIntelligence = null;
-
-    #[ORM\Column]
-    private ?int $resistancePhysique = null;
-
-    #[ORM\Column]
-    private ?int $resistanceMagique = null;
-
-    #[ORM\Column]
-    private ?int $resistanceMentale = null;
-
     #[ORM\Column(nullable: true)]
     private ?int $vieActuelle = null;
 
@@ -110,11 +89,15 @@ class Personnage
     #[ORM\JoinTable(name: 'personnage_campagne')]
     private Collection $campagnes;
 
+    #[ORM\OneToMany(targetEntity: Stat::class, mappedBy: 'personnage', cascade: ['persist', 'remove'])]
+    private Collection $stats;
+
     public function __construct()
     {
         $this->objets = new ArrayCollection();
         $this->attaques = new ArrayCollection();
         $this->campagnes = new ArrayCollection();
+        $this->stats = new ArrayCollection();
     }
 
     // ── Getters / Setters ──────────────────────────────────
@@ -147,27 +130,6 @@ class Personnage
 
     public function getNiveau(): ?int { return $this->niveau; }
     public function setNiveau(?int $niveau): static { $this->niveau = $niveau; return $this; }
-
-    public function getStateForce(): ?int { return $this->stateForce; }
-    public function setStateForce(?int $stateForce): static { $this->stateForce = $stateForce; return $this; }
-
-    public function getStateConstitution(): ?int { return $this->stateConstitution; }
-    public function setStateConstitution(?int $stateConstitution): static { $this->stateConstitution = $stateConstitution; return $this; }
-
-    public function getStateRapidite(): ?int { return $this->stateRapidite; }
-    public function setStateRapidite(?int $stateRapidite): static { $this->stateRapidite = $stateRapidite; return $this; }
-
-    public function getStateIntelligence(): ?int { return $this->stateIntelligence; }
-    public function setStateIntelligence(?int $stateIntelligence): static { $this->stateIntelligence = $stateIntelligence; return $this; }
-
-    public function getResistancePhysique(): ?int { return $this->resistancePhysique; }
-    public function setResistancePhysique(?int $resistancePhysique): static { $this->resistancePhysique = $resistancePhysique; return $this; }
-
-    public function getResistanceMagique(): ?int { return $this->resistanceMagique; }
-    public function setResistanceMagique(?int $resistanceMagique): static { $this->resistanceMagique = $resistanceMagique; return $this; }
-
-    public function getResistanceMentale(): ?int { return $this->resistanceMentale; }
-    public function setResistanceMentale(?int $resistanceMentale): static { $this->resistanceMentale = $resistanceMentale; return $this; }
 
     public function getUser(): ?User { return $this->user; }
     public function setUser(?User $user): static { $this->user = $user; return $this; }
@@ -224,6 +186,23 @@ class Personnage
     public function setPortrait(?string $portrait): static
     {
         $this->portrait = $portrait;
+        return $this;
+    }
+
+    public function getStats(): Collection { return $this->stats; }
+
+    public function addStat(Stat $stat): static
+    {
+        if (!$this->stats->contains($stat)) {
+            $this->stats->add($stat);
+            $stat->setPersonnage($this);
+        }
+        return $this;
+    }
+
+    public function removeStat(Stat $stat): static
+    {
+        $this->stats->removeElement($stat);
         return $this;
     }
 }
