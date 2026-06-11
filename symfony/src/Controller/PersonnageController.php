@@ -39,21 +39,19 @@ final class PersonnageController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $personnage = new Personnage();
-        // Associe directement le personnage à l'utilisateur connecté
         $personnage->setUser($this->getUser());
         $form = $this->createForm(PersonnageType::class, $personnage);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Récupère le fichier image envoyé depuis le formulaire
+            $dataPersonnage = $request->request->all('personnage');
+
+            // --- PORTRAIT ---
             /** @var UploadedFile $portraitFile */
             $portraitFile = $form->get('portrait')->getData();
-
             if ($portraitFile) {
-                // Génère un nom de fichier unique pour éviter les doublons
                 $newFilename = uniqid().'.'.$portraitFile->guessExtension();
                 try {
-                    // Déplace le fichier vers le dossier de portraits configuré
                     $portraitFile->move(
                         $this->getParameter('portraits_directory'),
                         $newFilename
@@ -62,6 +60,17 @@ final class PersonnageController extends AbstractController
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors de l\'upload du portrait.');
                 }
+            }
+
+            // --- STATS ---
+            $statsData = $dataPersonnage['stats'] ?? [];
+            foreach ($statsData as $sData) {
+                if (empty($sData['nom'])) continue;
+                $stat = new \App\Entity\Stat();
+                $stat->setNom($sData['nom'])
+                    ->setValeur((int)($sData['valeur'] ?? 0));
+                $personnage->addStat($stat);
+                $entityManager->persist($stat);
             }
 
             $entityManager->persist($personnage);
@@ -73,15 +82,6 @@ final class PersonnageController extends AbstractController
         return $this->render('personnage/new.html.twig', [
             'personnage' => $personnage,
             'form' => $form,
-        ]);
-    }
-
-    // Affiche le détail d'un personnage
-    #[Route('/{id}', name: 'app_personnage_show', methods: ['GET'])]
-    public function show(Personnage $personnage): Response
-    {
-        return $this->render('personnage/show.html.twig', [
-            'personnage' => $personnage,
         ]);
     }
 
