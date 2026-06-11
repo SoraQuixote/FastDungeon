@@ -82,27 +82,14 @@
 
                     <hr class="fiche-separateur-stats">
 
-                    {# Stats auto-générées pour gagner de la place #}
-                    {% set stats = {
-                        'stateForce': 'Force',
-                        'stateConstitution': 'Constitution',
-                        'stateRapidite': 'Rapidité',
-                        'stateIntelligence': 'Intelligence',
-                        'resistancePhysique': 'Rés. Physique',
-                        'resistanceMagique': 'Rés. Magique',
-                        'resistanceMentale': 'Rés. Mentale'
-                    } %}
-
-                    {% for key, label in stats %}
-                        <div class="stat-ligne">
-                            <span class="stat-nom">{{ label }}</span>
-                            <button type="button" class="btn-stat" onclick="changeStat('{{ key }}', -1)">−</button>
-                            <span class="stat-valeur" id="{{ key }}">{{ attribute(personnage, key)|default(0) }}</span>
-                            <button type="button" class="btn-stat" onclick="changeStat('{{ key }}', 1)">+</button>
-                            <input type="hidden" name="personnage[{{ key }}]" id="{{ key }}_input" value="{{ attribute(personnage, key)|default(0) }}">
+                    {# Stats dynamiques #}
+                    <div class="stats-dynamiques">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-weight:bold; color:#5a3a1b;">Stats & Résistances</span>
+                            <button type="button" class="btn-medieval" onclick="openStatModal()" style="padding:4px 10px; font-size:0.8rem;">+ Ajouter</button>
                         </div>
-                        {% if loop.index == 4 %}<hr class="fiche-separateur-stats">{% endif %}
-                    {% endfor %}
+                        <div id="liste-stats"></div>
+                    </div>
                 </div>
 
                 {# --- COLONNE 3 : Capacités --- #}
@@ -290,6 +277,28 @@
             </div>
         </div>
     </div>
+    {# ===== MODALE STAT ===== #}
+    <div id="modalStat" class="modal-medieval" style="display:none;">
+        <div class="modal-content">
+            <h3 id="statModalTitle">Nouvelle Stat</h3>
+            <input type="hidden" id="stat_edit_index">
+
+            <div class="form-group">
+                <label>Nom de la stat</label>
+                <input type="text" id="stat_nom" placeholder="Ex: Force, Agilité, Résistance Feu...">
+            </div>
+
+            <div class="form-group">
+                <label>Valeur</label>
+                <input type="number" id="stat_valeur" value="0">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-medieval" onclick="sauvegarderStat()">Enregistrer</button>
+                <button type="button" class="btn-medieval btn-quitter" onclick="closeStatModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
 </form>
 {# FORMULAIRE DE SUPPRESSION#}
 {% if personnage.id %}
@@ -333,9 +342,19 @@
             {% endfor %}
         ];
 
+        statsData = [
+            {% for stat in personnage.stats %}
+            {
+                nom: "{{ stat.nom|e('js') }}",
+                valeur: {{ stat.valeur|default(0) }}
+            },
+            {% endfor %}
+        ];
+
         document.addEventListener("DOMContentLoaded", function() {
             renderAttaques();
             renderObjets();
+            renderStats();
         });
     </script>
 {% endblock %}

@@ -1,5 +1,7 @@
 /* public/js/fiche-personnage.js */
-
+let attaquesData = [];
+let statsData = [];
+let objetsData = [];
 /* ===== BARRE DE VIE ===== */
 function updateVieBar() {
     const span = document.getElementById("vieActuelle");
@@ -29,14 +31,9 @@ function changeVie(val) {
 }
 
 /* ===== STATS ===== */
-function changeStat(stat, val) {
-    const span = document.getElementById(stat);
-    if(!span) return;
-    let current = parseInt(span.textContent);
-    current = Math.max(-999, current + val);
-    span.textContent = current;
-    const input = document.getElementById(stat + "_input");
-    if(input) input.value = current;
+function changeStat(index, val) {
+    statsData[index].valeur = (statsData[index].valeur || 0) + val;
+    renderStats();
 }
 
 /* ===== INITIALISATION & PORTRAIT ===== */
@@ -62,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /* ===== GESTION DES ATTAQUES ===== */
-let attaquesData = [];
+
 
 function toggleTypeFields() {
     const type = document.getElementById('atk_type').value;
@@ -201,8 +198,10 @@ function renderAttaques() {
 window.onclick = function(event) {
     const modalAtk = document.getElementById('modalAttaque');
     const modalObj = document.getElementById('modalObjet');
-    if (event.target == modalAtk) closeAttaqueModal();
-    if (event.target == modalObj) closeObjetModal();
+    const modalStat = document.getElementById('modalStat');
+    if (event.target === modalAtk) closeAttaqueModal();
+    if (event.target === modalObj) closeObjetModal();
+    if (event.target === modalStat) closeStatModal();
 }
 function switchTab(tabId) {
     // Masquer tous les contenus
@@ -228,7 +227,7 @@ function switchTab(tabId) {
     // mais pour l'instant, assure-toi que l'onglet s'affiche.
 }
 /* ===== GESTION DES OBJETS ===== */
-let objetsData = [];
+
 
 function openObjetModal(index = null) {
     const modal = document.getElementById('modalObjet');
@@ -310,6 +309,87 @@ function renderObjets() {
                 <input type="hidden" name="personnage[objets][${index}][description]" value="${obj.desc}">
                 
                 <button type="button" class="btn-stat" onclick="supprimerObjet(${index})" style="background: #800; border: none; color: white; padding: 2px 6px; border-radius: 3px; cursor: pointer;">🗑</button>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+    });
+}
+/* ===== GESTION DES STATS DYNAMIQUES ===== */
+
+
+function openStatModal(index = null) {
+    const modal = document.getElementById('modalStat');
+    const title = document.getElementById('statModalTitle');
+
+    if (index !== null) {
+        const stat = statsData[index];
+        title.innerText = "📝 Modifier la Stat";
+        document.getElementById('stat_edit_index').value = index;
+        document.getElementById('stat_nom').value = stat.nom;
+        document.getElementById('stat_valeur').value = stat.valeur;
+    } else {
+        title.innerText = "Nouvelle Stat";
+        document.getElementById('stat_edit_index').value = "";
+        document.getElementById('stat_nom').value = "";
+        document.getElementById('stat_valeur').value = 0;
+    }
+
+    modal.style.display = 'block';
+}
+
+function closeStatModal() {
+    document.getElementById('modalStat').style.display = 'none';
+}
+
+function sauvegarderStat() {
+    const nom = document.getElementById('stat_nom').value.trim();
+    if (!nom) return alert("Le nom de la stat est requis");
+
+    const stat = {
+        nom: nom,
+        valeur: parseInt(document.getElementById('stat_valeur').value) || 0
+    };
+
+    const index = document.getElementById('stat_edit_index').value;
+    if (index !== "") {
+        statsData[parseInt(index)] = stat;
+    } else {
+        statsData.push(stat);
+    }
+
+    renderStats();
+    closeStatModal();
+}
+
+function supprimerStat(index) {
+    if (confirm("Supprimer cette stat ?")) {
+        statsData.splice(index, 1);
+        renderStats();
+    }
+}
+
+function renderStats() {
+    const container = document.getElementById('liste-stats');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (statsData.length === 0) {
+        container.innerHTML = '<p class="empty-msg" style="color:#5a3a1b; font-size:0.85rem;">Aucune stat. Cliquez sur + Ajouter.</p>';
+        return;
+    }
+
+    statsData.forEach((stat, index) => {
+        const html = `
+            <div class="stat-ligne">
+                <span class="stat-nom" onclick="openStatModal(${index})" style="cursor:pointer;" title="Cliquer pour modifier">${stat.nom}</span>
+                <button type="button" class="btn-stat" onclick="changeStat(${index}, -1)">−</button>
+                <span class="stat-valeur" id="stat_val_${index}">${stat.valeur}</span>
+                <button type="button" class="btn-stat" onclick="changeStat(${index}, 1)">+</button>
+                <button type="button" class="btn-stat" onclick="supprimerStat(${index})" style="background:#800; color:white;">🗑</button>
+
+                <input type="hidden" name="personnage[stats][${index}][nom]" value="${stat.nom}">
+                <input type="hidden" name="personnage[stats][${index}][valeur]" id="stat_input_${index}" value="${stat.valeur}">
             </div>
         `;
         container.insertAdjacentHTML('beforeend', html);
