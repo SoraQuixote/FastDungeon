@@ -88,10 +88,7 @@ function openAttaqueModal(index = null) {
         
         if(atk.type === 'physique') {
             document.getElementById('atk_contre').value = atk.contre || 0;
-        } else {
-            document.getElementById('atk_magie_pv').value = atk.ptsDeVie || 0;
-            document.getElementById('atk_magie_type').value = atk.magieType || "Magie noire";
-        }
+        } 
     } else {
         title.innerText = "Nouvelle Capacité";
         document.getElementById('edit_index').value = "";
@@ -102,7 +99,6 @@ function openAttaqueModal(index = null) {
         document.getElementById('atk_effet').value = "";
         document.getElementById('atk_desc').value = "";
         document.getElementById('atk_contre').value = 0;
-        document.getElementById('atk_magie_pv').value = 0;
     }
     
     toggleTypeFields();
@@ -137,8 +133,6 @@ function sauvegarderAttaque() {
         effet: document.getElementById('atk_effet').value || "",
         desc: document.getElementById('atk_desc').value || "",
         contre: (type === 'physique') ? document.getElementById('atk_contre').value : 0,
-        ptsDeVie: (type === 'magique') ? document.getElementById('atk_magie_pv').value : 0,
-        magieType: (type === 'magique') ? document.getElementById('atk_magie_type').value : ""
     };
 
     const index = document.getElementById('edit_index').value;
@@ -175,9 +169,6 @@ function renderAttaques() {
                 <input type="hidden" name="personnage[attaques][${index}][effet]" value="${atk.effet}">
                 <input type="hidden" name="personnage[attaques][${index}][desc]" value="${atk.desc}">
                 <input type="hidden" name="personnage[attaques][${index}][contre]" value="${atk.contre || 0}">
-                <input type="hidden" name="personnage[attaques][${index}][magieType]" value="${atk.magieType || ''}">
-                <input type="hidden" name="personnage[attaques][${index}][ptsDeVie]" value="${atk.ptsDeVie || 0}">
-                
                 <button type="button" class="btn-stat" onclick="supprimerAttaque(${index})" style="background: #800; border: none; color: white; border-radius: 3px; cursor: pointer;">🗑</button>
             </div>
         `;

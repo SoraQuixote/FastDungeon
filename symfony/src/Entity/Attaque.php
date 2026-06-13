@@ -28,8 +28,8 @@ abstract class Attaque
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $ptsDegat = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $ptsDegat = null;
 
     #[ORM\Column(length: 200, nullable: true)]
     private ?string $effet = null;
@@ -49,8 +49,8 @@ abstract class Attaque
     #[ORM\ManyToMany(targetEntity: Pnj::class, mappedBy: 'attaques')]
     private Collection $pnjs;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $cout = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $cout = null;
 
     public function __construct()
     {
@@ -66,8 +66,8 @@ abstract class Attaque
     public function getDescription(): ?string { return $this->description; }
     public function setDescription(?string $description): static { $this->description = $description; return $this; }
 
-    public function getPtsDegat(): ?int { return $this->ptsDegat; }
-    public function setPtsDegat(?int $ptsDegat): static { $this->ptsDegat = $ptsDegat; return $this; }
+    public function getPtsDegat(): ?string { return $this->ptsDegat; }
+    public function setPtsDegat(?string $ptsDegat): static { $this->ptsDegat = $ptsDegat; return $this; }
 
     public function getEffet(): ?string { return $this->effet; }
     public function setEffet(?string $effet): static { $this->effet = $effet; return $this; }
@@ -91,15 +91,6 @@ abstract class Attaque
         return 'physique'; // valeur par défaut
     }
 
-    public function getCout(): ?int
-    {
-        return $this->cout;
-    }
-
-    public function setCout(?int $cout): static
-    {
-        $this->cout = $cout;
-
-        return $this;
-    }
+   public function getCout(): ?string { return $this->cout; }
+   public function setCout(?string $cout): static { $this->cout = $cout; return $this; }
 }

@@ -102,14 +102,12 @@ final class PersonnageController extends AbstractController
             foreach ($personnage->getAttaques() as $oldAtk) {
                 $entityManager->remove($oldAtk);
             }
-            foreach ($attaquesData as $data) {
+           foreach ($attaquesData as $data) {
                 if (empty($data['nom'])) continue;
                 $type = strtolower(trim($data['type'] ?? ''));
                 // Crée une AttaqueMagique ou AttaquePhysique selon le type
                 if ($type === 'magique') {
                     $atk = new \App\Entity\AttaqueMagique();
-                    $atk->setPtsDeVie((int)($data['ptsDeVie'] ?? 0));
-                    $atk->setType($data['magieType'] ?? 'Magie Noire');
                 } else {
                     $atk = new \App\Entity\AttaquePhysique();
                     $atk->setDegatDeContre((int)($data['contre'] ?? 0));

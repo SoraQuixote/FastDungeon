@@ -8,11 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: AttaquePhysiqueRepository::class)]
 class AttaquePhysique extends Attaque
 {
-    #[ORM\Column(nullable: true)]
-    private ?int $degatDeContre = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $degatDeContre = null;
 
-    public function getDegatDeContre(): ?int { return $this->degatDeContre; }
-    public function setDegatDeContre(?int $degatDeContre): static { $this->degatDeContre = $degatDeContre; return $this; }
+    public function getDegatDeContre(): ?string { return $this->degatDeContre; }
+    public function setDegatDeContre(?string $degatDeContre): static { $this->degatDeContre = $degatDeContre; return $this; }
 
     public function getDiscriminatorType(): string
     {
