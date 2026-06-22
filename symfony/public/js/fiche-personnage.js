@@ -2,6 +2,7 @@
 let attaquesData = [];
 let statsData = [];
 let objetsData = [];
+let passifsData = [];
 /* ===== BARRE DE VIE ===== */
 function updateVieBar() {
     const span = document.getElementById("vieActuelle");
@@ -190,6 +191,8 @@ window.onclick = function(event) {
     const modalAtk = document.getElementById('modalAttaque');
     const modalObj = document.getElementById('modalObjet');
     const modalStat = document.getElementById('modalStat');
+    const modalPassif = document.getElementById('modalPassif');
+    if (event.target === modalPassif) closePassifModal();
     if (event.target === modalAtk) closeAttaqueModal();
     if (event.target === modalObj) closeObjetModal();
     if (event.target === modalStat) closeStatModal();
@@ -385,4 +388,98 @@ function renderStats() {
         `;
         container.insertAdjacentHTML('beforeend', html);
     });
+}
+/* ===== GESTION DES PASSIFS / MAÎTRISES ===== */
+
+function openPassifModal(index = null) {
+    const modal = document.getElementById('modalPassif');
+    const title = document.getElementById('passifModalTitle');
+
+    if (index !== null) {
+        const p = passifsData[index];
+        title.innerText = "📝 Modifier le Passif";
+        document.getElementById('passif_edit_index').value = index;
+        document.getElementById('passif_categorie').value = p.categorie;
+        document.getElementById('passif_nom').value = p.nom;
+        document.getElementById('passif_effet').value = p.effet || "";
+        document.getElementById('passif_desc').value = p.desc || "";
+    } else {
+        title.innerText = "Nouveau Passif";
+        document.getElementById('passif_edit_index').value = "";
+        document.getElementById('passif_categorie').value = "passif";
+        document.getElementById('passif_nom').value = "";
+        document.getElementById('passif_effet').value = "";
+        document.getElementById('passif_desc').value = "";
+    }
+
+    modal.style.display = 'block';
+}
+
+function closePassifModal() {
+    document.getElementById('modalPassif').style.display = 'none';
+}
+
+function sauvegarderPassif() {
+    const nom = document.getElementById('passif_nom').value.trim();
+    if (!nom) return alert("Le nom est requis");
+
+    const passif = {
+        nom: nom,
+        categorie: document.getElementById('passif_categorie').value,
+        effet: document.getElementById('passif_effet').value || "",
+        desc: document.getElementById('passif_desc').value || ""
+    };
+
+    const index = document.getElementById('passif_edit_index').value;
+    if (index !== "") {
+        passifsData[index] = passif;
+    } else {
+        passifsData.push(passif);
+    }
+
+    renderPassifs();
+    closePassifModal();
+}
+
+function supprimerPassif(index) {
+    if (confirm("Supprimer ce passif ?")) {
+        passifsData.splice(index, 1);
+        renderPassifs();
+    }
+}
+
+function renderPassifs() {
+    const contPassif = document.getElementById('liste-passif');
+    const contMaitrise = document.getElementById('liste-maitrise');
+    if (!contPassif || !contMaitrise) return;
+
+    contPassif.innerHTML = '';
+    contMaitrise.innerHTML = '';
+
+    passifsData.forEach((p, index) => {
+        let html = `
+            <div class="attaque-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 4px;">
+                <span onclick="openPassifModal(${index})" style="cursor: pointer; flex-grow: 1;">
+                    <strong>${p.nom}</strong>
+                </span>
+                <input type="hidden" name="personnage[passifs][${index}][nom]" value="${p.nom}">
+                <input type="hidden" name="personnage[passifs][${index}][categorie]" value="${p.categorie}">
+                <input type="hidden" name="personnage[passifs][${index}][effet]" value="${p.effet}">
+                <input type="hidden" name="personnage[passifs][${index}][description]" value="${p.desc}">
+
+                <button type="button" class="btn-stat" onclick="supprimerPassif(${index})" style="background: #800; border: none; color: white; border-radius: 3px; cursor: pointer;">🗑</button>
+            </div>
+        `;
+
+        if (p.categorie === 'maitrise') {
+            contMaitrise.insertAdjacentHTML('beforeend', html);
+        } else {
+            contPassif.insertAdjacentHTML('beforeend', html);
+        }
+    });
+
+    if (passifsData.length === 0) {
+        contPassif.innerHTML = '<p class="empty-msg">Aucun passif</p>';
+        contMaitrise.innerHTML = '<p class="empty-msg">Aucune maîtrise</p>';
+    }
 }

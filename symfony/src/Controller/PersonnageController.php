@@ -73,6 +73,22 @@ final class PersonnageController extends AbstractController
                 $entityManager->persist($stat);
             }
 
+            // --- SAUVEGARDE DES PASSIFS ---
+            $passifsData = $dataPersonnage['passifs'] ?? [];
+            foreach ($personnage->getPassifs() as $oldPassif) {
+                $entityManager->remove($oldPassif);
+            }
+            foreach ($passifsData as $pData) {
+                if (empty($pData['nom'])) continue;
+                $passif = new \App\Entity\Passif();
+                $passif->setNom($pData['nom'])
+                        ->setDescription($pData['description'] ?? '')
+                        ->setEffet($pData['effet'] ?? '')
+                        ->setCategorie($pData['categorie'] ?? 'passif');
+                $personnage->addPassif($passif);
+                $entityManager->persist($passif);
+            }
+
             $entityManager->persist($personnage);
             $entityManager->flush();
 
@@ -150,7 +166,23 @@ final class PersonnageController extends AbstractController
                 $entityManager->persist($stat);
             }
 
-            // --- 4. ARME ET ARMURE ---
+            // ---4. SAUVEGARDE DES PASSIFS ---
+            $passifsData = $dataPersonnage['passifs'] ?? [];
+            foreach ($personnage->getPassifs() as $oldPassif) {
+                $entityManager->remove($oldPassif);
+            }
+            foreach ($passifsData as $pData) {
+                if (empty($pData['nom'])) continue;
+                $passif = new \App\Entity\Passif();
+                $passif->setNom($pData['nom'])
+                        ->setDescription($pData['description'] ?? '')
+                        ->setEffet($pData['effet'] ?? '')
+                        ->setCategorie($pData['categorie'] ?? 'passif');
+                $personnage->addPassif($passif);
+                $entityManager->persist($passif);
+            }
+
+            // --- 5. ARME ET ARMURE ---
             // Met à jour l'arme existante ou en crée une nouvelle si absente
             if (isset($dataPersonnage['arme'])) {
                 $arme = $personnage->getArme() ?? new \App\Entity\Arme();
@@ -171,7 +203,7 @@ final class PersonnageController extends AbstractController
                 $entityManager->persist($armure);
             }
 
-            // --- 5. PORTRAIT ---
+            // --- 6. PORTRAIT ---
             // Remplace le portrait uniquement si un nouveau fichier est envoyé
             /** @var UploadedFile $portraitFile */
             $portraitFile = $form->get('portrait')->getData();
