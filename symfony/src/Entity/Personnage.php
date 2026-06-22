@@ -82,6 +82,10 @@ class Personnage
     #[ORM\JoinTable(name: 'personnage_attaque')]
     private Collection $attaques;
 
+    #[ORM\ManyToMany(targetEntity: Passif::class, inversedBy: 'personnages')]
+    #[ORM\JoinTable(name: 'personnage_passif')]
+    private Collection $passifs;
+
     /**
      * Relation "associer" : un Personnage peut être associé à plusieurs Campagnes (ManyToMany)
      */
@@ -98,6 +102,7 @@ class Personnage
         $this->attaques = new ArrayCollection();
         $this->campagnes = new ArrayCollection();
         $this->stats = new ArrayCollection();
+        $this->passifs = new ArrayCollection();
     }
 
     // ── Getters / Setters ──────────────────────────────────
@@ -176,8 +181,6 @@ class Personnage
         return $this;
     }
 
-   
-
     public function getPortrait(): ?string
     {
         return $this->portrait;
@@ -205,4 +208,15 @@ class Personnage
         $this->stats->removeElement($stat);
         return $this;
     }
+
+    public function getPassifs(): Collection { return $this->passifs; }
+    public function addPassif(Passif $passif): static
+    {
+        if (!$this->passifs->contains($passif)) {
+            $this->passifs->add($passif);
+            $passif->addPersonnage($this);
+        }
+        return $this;
+    }
+    public function removePassif(Passif $passif): static { $this->passifs->removeElement($passif); return $this; }
 }

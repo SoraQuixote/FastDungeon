@@ -304,6 +304,17 @@
             renderAttaques();
             renderObjets();
             renderStats();
+            renderPassifs();
         });
+        passifsData = [
+            {% for p in personnage.passifs %}
+            {
+                nom: "{{ p.nom|e('js') }}",
+                categorie: "{{ p.categorie|e('js') }}",
+                effet: "{{ p.effet|e('js') }}",
+                desc: "{{ p.description|e('js') }}"
+            },
+            {% endfor %}
+        ];
     </script>
 {% endblock %}

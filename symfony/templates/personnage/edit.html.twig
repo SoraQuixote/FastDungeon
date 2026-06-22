@@ -17,6 +17,7 @@
             <button type="submit" class="btn-medieval">Sauvegarder</button>
             <button type="button" class="btn-medieval tab-btn active" onclick="switchTab('general')">📜 Général</button>
             <button type="button" class="btn-medieval tab-btn" onclick="switchTab('equipement')">⚔ Équipement</button>
+            <button type="button" class="btn-medieval tab-btn" onclick="switchTab('passif')">🌀 Passif</button>
         </div>
         
         <h2 class="fiche-titre">✦ {{ personnage.prenom|default('Nouveau Héros') }} ✦</h2>
@@ -155,6 +156,26 @@
             </div>
         </div>
 
+        {# --- ONGLET PASSIF --- #}
+        <div id="tab-passif" class="tab-content" style="display:none;">
+            <div class="fiche-col-attaques" style="max-width: 600px; margin: 0 auto;">
+                <h3>Passifs & Maîtrises</h3>
+                <button type="button" class="btn-medieval" onclick="openPassifModal()">+ Créer un Passif</button>
+                <div class="cat-attaque-section">
+                    <h4>🌀 Passifs</h4>
+                    <div id="liste-passif" class="attaques-container">
+                        <p class="empty-msg">Aucun passif.</p>
+                    </div>
+                </div>
+                <div class="cat-attaque-section">
+                    <h4>🎯 Maîtrises</h4>
+                    <div id="liste-maitrise" class="attaques-container">
+                        <p class="empty-msg">Aucune maîtrise.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {# --- INVENTAIRE --- #}
         <div class="inventaire-section">
             <h3>Inventaire Global</h3>
@@ -279,6 +300,42 @@
             <div class="modal-actions">
                 <button type="button" class="btn-medieval" onclick="sauvegarderStat()">Enregistrer</button>
                 <button type="button" class="btn-medieval btn-quitter" onclick="closeStatModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+    {# ===== MODALE PASSIF ===== #}
+    <div id="modalPassif" class="modal-medieval" style="display:none;">
+        <div class="modal-content">
+            <h3 id="passifModalTitle">Nouveau Passif</h3>
+            <input type="hidden" id="passif_edit_index">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Catégorie</label>
+                    <select id="passif_categorie">
+                        <option value="passif">Passif</option>
+                        <option value="maitrise">Maîtrise</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" id="passif_nom">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Effet</label>
+                <input type="text" id="passif_effet" placeholder="Ex: +1 dégât en mêlée">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="passif_desc" rows="3"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-medieval" onclick="sauvegarderPassif()">Enregistrer</button>
+                <button type="button" class="btn-medieval btn-quitter" onclick="closePassifModal()">Annuler</button>
             </div>
         </div>
     </div>
